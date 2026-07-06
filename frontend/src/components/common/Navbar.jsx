@@ -14,7 +14,7 @@ export default function Navbar({ onNavigate, currentPage }) {
 
   return (
     <header className="navbar fixed top-0 w-full z-50 bg-surface/70 backdrop-blur-md border-b border-primary/10 shadow-sm transition-all duration-200">
-      <div className="flex justify-between items-center px-gutter h-16 max-w-container-max mx-auto w-full">
+      <div className="flex justify-between items-center px-gutter h-16 w-full">
         {/* Brand/Logo */}
         <button 
           onClick={(e) => handleLinkClick('home', e)}
@@ -26,7 +26,7 @@ export default function Navbar({ onNavigate, currentPage }) {
             src={logoUrl} 
           />
           <span className="font-headline-md text-headline-md font-bold text-primary hidden sm:inline-block">
-            Anurag University
+            Secure My Campus
           </span>
         </button>
 
@@ -52,7 +52,7 @@ export default function Navbar({ onNavigate, currentPage }) {
             }`}
             href="#"
           >
-            Complaint Box
+            Complaint
           </a>
           <a 
             onClick={(e) => handleLinkClick('dashboard', e)}
@@ -143,7 +143,7 @@ export default function Navbar({ onNavigate, currentPage }) {
               }`}
               href="#"
             >
-              Complaint Box
+              Complaint
             </a>
             <a 
               onClick={(e) => handleLinkClick('dashboard', e)}

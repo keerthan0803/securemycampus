@@ -12,7 +12,7 @@ export default function Hero({ onGetStarted, onLearnMore }) {
             Ensuring a <span className="text-on-primary-container">Safer Campus</span> for Everyone
           </h1>
           <p className="font-body-lg text-body-lg opacity-90 max-w-xl">
-            A centralized, secure, and rapid response platform designed for the students and faculty of Anurag University. Report incidents, track safety, and stay informed with real-time campus updates.
+            A centralized, secure, and rapid response platform designed for the students and faculty of Secure My Campus. Report incidents, track safety, and stay informed with real-time campus updates.
           </p>
           <div className="flex flex-wrap gap-md pt-md">
             <button 
@@ -33,7 +33,7 @@ export default function Hero({ onGetStarted, onLearnMore }) {
         <div className="relative hidden lg:block group">
           <div className="absolute -inset-4 bg-primary-container rounded-3xl blur-2xl opacity-20 group-hover:opacity-40 transition-opacity"></div>
           <img 
-            alt="Anurag University Campus View" 
+            alt="Secure My Campus View" 
             className="relative rounded-3xl shadow-2xl w-full h-[500px] object-cover border-4 border-white/20" 
             src="https://lh3.googleusercontent.com/aida-public/AB6AXuA8rFhA58jk2z3_kuDGS_CBl6aDwC7sk7dKYOCW9oyH7syYPZgJ0iop7XGLIRKfUXnYNSbkzY5n6qEWrap4521Uy4jR_Vl_6rv5NXGVkTJ5tlNYf-IuVCLTXjCgLeEfWDa1lspqdMqyEdQrndgbkTUyjarxPJyr8RXq6uHYkoc9fA-feuwcFRPqR3IKkU12HRJES1nwAXBixDkc80rAUaHsaaM6Mja4gYwZW0R0o3maCy1wGpcb_TU-qKq38Wq0eO6tQw"
           />

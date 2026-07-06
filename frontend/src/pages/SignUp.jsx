@@ -131,29 +131,29 @@ export default function SignUp({ onNavigate }) {
             required
           />
 
-          {/* Contact Grid */}
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-md">
-            <Input
-              label="Phone Number"
-              id="phone"
-              type="tel"
-              icon="phone"
-              placeholder="+1 (555) 000-0000"
-              value={phone}
-              onChange={(e) => setPhone(e.target.value)}
-              required
-            />
-            <Input
-              label="Email"
-              id="email"
-              type="email"
-              icon="mail"
-              placeholder="student@university.edu"
-              value={email}
-              onChange={(e) => setEmail(e.target.value)}
-              required
-            />
-          </div>
+          {/* Phone Number Field */}
+          <Input
+            label="Phone Number"
+            id="phone"
+            type="tel"
+            icon="phone"
+            placeholder="+1 (555) 000-0000"
+            value={phone}
+            onChange={(e) => setPhone(e.target.value)}
+            required
+          />
+
+          {/* Email Field */}
+          <Input
+            label="Email"
+            id="email"
+            type="email"
+            icon="mail"
+            placeholder="student@securemycampus.edu"
+            value={email}
+            onChange={(e) => setEmail(e.target.value)}
+            required
+          />
 
           {/* Password Field */}
           <Input
@@ -217,7 +217,7 @@ export default function SignUp({ onNavigate }) {
         </form>
 
         {/* Divider */}
-        <div className="flex items-center gap-md my-xl select-none">
+        <div className="flex items-center gap-md my-sm select-none">
           <div className="flex-grow h-[1px] bg-outline-variant"></div>
           <span className="font-label-md text-label-md text-outline">OR</span>
           <div className="flex-grow h-[1px] bg-outline-variant"></div>
@@ -237,7 +237,7 @@ export default function SignUp({ onNavigate }) {
         </div>
 
         {/* Redirect to Sign In */}
-        <div className="mt-xl text-center">
+        <div className="mt-sm text-center">
           <p className="font-body-md text-body-md text-on-surface-variant">
             Already have an account?{' '}
             <button 

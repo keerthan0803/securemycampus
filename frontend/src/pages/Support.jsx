@@ -166,7 +166,7 @@ export default function Support() {
                   <input 
                     id="emailAddr"
                     className="w-full p-md bg-white border border-outline-variant rounded-lg focus:ring-2 focus:ring-primary focus:border-primary outline-none transition-all font-body-md" 
-                    placeholder="student@anurag.edu.in" 
+                    placeholder="student@securemycampus.edu" 
                     required
                     type="email"
                     value={email}

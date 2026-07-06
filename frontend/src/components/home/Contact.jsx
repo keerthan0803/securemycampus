@@ -11,7 +11,7 @@ const DEFAULT_CONTACTS = [
     id: 'email',
     icon: 'mail',
     label: 'General Inquiries',
-    value: 'security@anurag.edu.in',
+    value: 'security@securemycampus.edu',
   },
 ];
 

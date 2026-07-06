@@ -11,7 +11,7 @@ export default function Footer({ onNavigate }) {
             onClick={() => onNavigate?.('home')}
             className="font-label-md text-label-md font-bold text-primary cursor-pointer border-none bg-transparent p-0 text-left focus:outline-none"
           >
-            Anurag University
+            Secure My Campus
           </button>
           <span className="text-caption font-caption text-on-surface-variant/40 select-none">|</span>
           <span className="text-caption font-caption text-on-surface-variant opacity-80 select-none">

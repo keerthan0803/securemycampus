@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import Card from '../components/ui/Card';
 import Input from '../components/ui/Input';
 import Button from '../components/ui/Button';
+import { GoogleLogin } from '@react-oauth/google';
 
 export default function SignUp({ onNavigate }) {
   const [username, setUsername] = useState('');
@@ -32,28 +33,75 @@ export default function SignUp({ onNavigate }) {
       return;
     }
 
-    setIsLoading(true);
-
-    // Simulate database registration API
-    setTimeout(() => {
-      setIsLoading(false);
-      alert('Registration submitted! Please check your email for verification.');
-      
-      // Reset fields
-      setUsername('');
-      setPhone('');
-      setEmail('');
-      setPassword('');
-      setConfirmPassword('');
-      setTermsAccepted(false);
-      
-      // Redirect to Sign In page
-      onNavigate('signin');
-    }, 1500);
+    // Actual database registration API
+    fetch('http://localhost:5000/api/auth/register', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({
+        name: username,
+        email: email,
+        password: password,
+      }),
+    })
+      .then((res) => {
+        if (!res.ok) {
+          return res.json().then((data) => {
+            throw new Error(data.message || 'Registration failed');
+          });
+        }
+        return res.json();
+      })
+      .then((data) => {
+        setIsLoading(false);
+        alert('Registration successful! Please login.');
+        
+        // Reset fields
+        setUsername('');
+        setPhone('');
+        setEmail('');
+        setPassword('');
+        setConfirmPassword('');
+        setTermsAccepted(false);
+        
+        // Redirect to Sign In page
+        onNavigate('signin');
+      })
+      .catch((err) => {
+        setIsLoading(false);
+        setError(err.message || 'Server error, please try again later.');
+      });
   };
 
-  const handleGoogleSignup = () => {
-    alert('Connecting to Google SSO Signup...');
+  const handleGoogleSignup = (googleToken) => {
+    setError(null);
+    setIsLoading(true);
+    fetch('http://localhost:5000/api/auth/google', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({ token: googleToken }),
+    })
+      .then((res) => {
+        if (!res.ok) {
+          return res.json().then((data) => {
+            throw new Error(data.message || 'Google signup failed');
+          });
+        }
+        return res.json();
+      })
+      .then((data) => {
+        setIsLoading(false);
+        localStorage.setItem('userInfo', JSON.stringify(data));
+        alert(`Registration successful! Welcome, ${data.name}. Logged in as ${data.role}.`);
+        onNavigate('home');
+      })
+      .catch((err) => {
+        setIsLoading(false);
+        setError(err.message || 'Server error, please try again.');
+      });
   };
 
   return (
@@ -176,18 +224,17 @@ export default function SignUp({ onNavigate }) {
         </div>
 
         {/* Social Signup */}
-        <Button 
-          variant="social" 
-          onClick={handleGoogleSignup}
-          className="w-full flex items-center justify-center gap-md bg-white border border-outline-variant text-on-surface"
-        >
-          <img 
-            alt="Google Logo" 
-            className="w-5 h-5 object-contain" 
-            src="https://lh3.googleusercontent.com/aida-public/AB6AXuAVlfjGo3d_0aq9MXgIH3n19ZGXn_wt36CABNmKYvT-bi6-Eh4-DQWNZFkEcRwV0m6668uXi0dhh441qhA9cSyCRZl_8TdrJTbS59bh6qGKCRhpnOm7UF2Od4220Msgd1870R1VdxIBiuc6bMewAH5qx_ht4nc72Qj9AeJFYXHUd38kGex9MzLc8s9CCe-sJ23VJIjHyZwqWj-O8hgSgu-mWLV1TjgBvFDmjYipF-Ao-vam77xXPnsp"
+        <div className="w-full flex justify-center">
+          <GoogleLogin
+            onSuccess={(credentialResponse) => {
+              handleGoogleSignup(credentialResponse.credential);
+            }}
+            onError={() => {
+              setError('Google Authentication failed. Please try again.');
+            }}
+            useOneTap
           />
-          Sign Up with Google
-        </Button>
+        </div>
 
         {/* Redirect to Sign In */}
         <div className="mt-xl text-center">

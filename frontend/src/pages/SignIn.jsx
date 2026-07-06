@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import Card from '../components/ui/Card';
 import Input from '../components/ui/Input';
 import Button from '../components/ui/Button';
+import { GoogleLogin } from '@react-oauth/google';
 
 export default function SignIn({ onNavigate }) {
   const [email, setEmail] = useState('');
@@ -17,17 +18,62 @@ export default function SignIn({ onNavigate }) {
     }
     
     setError(null);
-    setIsLoading(true);
-    
-    // Simulate login API validation process
-    setTimeout(() => {
-      setIsLoading(false);
-      setError('The credentials provided do not match our records. Please try again or contact security support.');
-    }, 1200);
+    // Actual login API call
+    fetch('http://localhost:5000/api/auth/login', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({ email, password }),
+    })
+      .then((res) => {
+        if (!res.ok) {
+          return res.json().then((data) => {
+            throw new Error(data.message || 'Login failed');
+          });
+        }
+        return res.json();
+      })
+      .then((data) => {
+        setIsLoading(false);
+        localStorage.setItem('userInfo', JSON.stringify(data));
+        alert(`Welcome back, ${data.name}! You are logged in as a ${data.role}.`);
+        onNavigate('home');
+      })
+      .catch((err) => {
+        setIsLoading(false);
+        setError(err.message || 'Server error, please try again.');
+      });
   };
 
-  const handleGoogleLogin = () => {
-    alert('Connecting to Google SSO Authorization Service...');
+  const handleGoogleLogin = (googleToken) => {
+    setError(null);
+    setIsLoading(true);
+    fetch('http://localhost:5000/api/auth/google', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({ token: googleToken }),
+    })
+      .then((res) => {
+        if (!res.ok) {
+          return res.json().then((data) => {
+            throw new Error(data.message || 'Google authentication failed');
+          });
+        }
+        return res.json();
+      })
+      .then((data) => {
+        setIsLoading(false);
+        localStorage.setItem('userInfo', JSON.stringify(data));
+        alert(`Welcome back, ${data.name}! You are logged in as a ${data.role}.`);
+        onNavigate('home');
+      })
+      .catch((err) => {
+        setIsLoading(false);
+        setError(err.message || 'Server error, please try again.');
+      });
   };
 
   return (
@@ -43,18 +89,17 @@ export default function SignIn({ onNavigate }) {
         </header>
 
         {/* Social Login */}
-        <Button 
-          variant="social" 
-          onClick={handleGoogleLogin}
-          className="w-full flex items-center justify-center gap-sm bg-white"
-        >
-          <img 
-            className="w-5 h-5 object-contain" 
-            alt="Google Logo" 
-            src="https://lh3.googleusercontent.com/aida-public/AB6AXuAS5sK3em5q_AQvgvrp2NpFUXasmOQwwjo4JTI6xM2p6mOPpDA-EMcckiGe0x1sssNNb3rYnm7BTuO9PQQp_HriTBF2A9pbLM87IyI2YwEe9PCbyaTeJF7_qsCKCH0PDF8piXtOuwTNsAmIORsKZour_93FhgpNtOXLKsCzv5UlvRhYd4t4uJEIUi8pwdFXH4mTqOy-FUIMr0ybNUEVF0JnuAnjx6ukfdhG8_m6ATlyeFqR8DJhnTdp"
+        <div className="w-full flex justify-center">
+          <GoogleLogin
+            onSuccess={(credentialResponse) => {
+              handleGoogleLogin(credentialResponse.credential);
+            }}
+            onError={() => {
+              setError('Google Authentication failed. Please try again.');
+            }}
+            useOneTap
           />
-          Continue with Google
-        </Button>
+        </div>
 
         {/* Divider */}
         <div className="flex items-center gap-sm select-none">

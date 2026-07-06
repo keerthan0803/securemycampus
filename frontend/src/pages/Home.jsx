@@ -67,6 +67,8 @@ export default function Home({ onNavigate }) {
       // Scroll to contact section
       const contactSection = document.querySelector('.contact');
       contactSection?.scrollIntoView({ behavior: 'smooth' });
+    } else if (featureId === 'profile') {
+      onNavigate('profile');
     } else {
       onNavigate('signin');
     }

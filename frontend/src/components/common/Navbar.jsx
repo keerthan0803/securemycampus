@@ -77,8 +77,12 @@ export default function Navbar({ onNavigate, currentPage }) {
             FAQs
           </a>
           <a 
-            onClick={(e) => handleLinkClick('signin', e)}
-            className="font-label-md text-label-md text-on-surface-variant hover:text-secondary transition-colors duration-200 cursor-pointer"
+            onClick={(e) => handleLinkClick('profile', e)}
+            className={`font-label-md text-label-md py-xs cursor-pointer border-none bg-transparent ${
+              currentPage === 'profile' 
+                ? 'text-primary border-b-2 border-primary' 
+                : 'text-on-surface-variant hover:text-secondary transition-colors duration-200'
+            }`}
             href="#"
           >
             Profile
@@ -160,8 +164,10 @@ export default function Navbar({ onNavigate, currentPage }) {
               FAQs
             </a>
             <a 
-              onClick={(e) => handleLinkClick('signin', e)}
-              className="font-label-md text-label-md py-xs text-on-surface-variant"
+              onClick={(e) => handleLinkClick('profile', e)}
+              className={`font-label-md text-label-md py-xs ${
+                currentPage === 'profile' ? 'text-primary font-bold' : 'text-on-surface-variant'
+              }`}
               href="#"
             >
               Profile

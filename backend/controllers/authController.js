@@ -32,7 +32,7 @@ const setRefreshTokenCookie = (res, token) => {
 // @route   POST /api/auth/register
 // @access  Public
 const registerUser = async (req, res, next) => {
-  const { name, email, password } = req.body;
+  const { name, email, password, phone } = req.body;
 
   try {
     if (!email || !password || !name) {
@@ -71,6 +71,7 @@ const registerUser = async (req, res, next) => {
       email,
       password,
       role,
+      phone,
     });
 
     if (user) {
@@ -82,6 +83,7 @@ const registerUser = async (req, res, next) => {
         name: user.name,
         email: user.email,
         role: user.role,
+        phone: user.phone,
         accessToken: generateAccessToken(user._id),
       });
     } else {
@@ -111,6 +113,7 @@ const loginUser = async (req, res, next) => {
         name: user.name,
         email: user.email,
         role: user.role,
+        phone: user.phone,
         accessToken: generateAccessToken(user._id),
       });
     } else {
@@ -184,6 +187,7 @@ const googleAuth = async (req, res, next) => {
       name: user.name,
       email: user.email,
       role: user.role,
+      phone: user.phone,
       accessToken: generateAccessToken(user._id),
     });
   } catch (error) {
@@ -245,6 +249,7 @@ const getUserProfile = async (req, res, next) => {
         name: user.name,
         email: user.email,
         role: user.role,
+        phone: user.phone,
       });
     } else {
       res.status(404);

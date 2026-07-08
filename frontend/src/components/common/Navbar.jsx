@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 
 export default function Navbar({ onNavigate, currentPage }) {
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
+  const isLoggedIn = !!localStorage.getItem('userInfo');
   
   // University Logo from the approved designs
   const logoUrl = "https://lh3.googleusercontent.com/aida-public/AB6AXuDPzRHWvLAUl6hm8aTooSB_FyFbtKAuWcJFT9-q1BXAbyGlDWkVzFjJVHpEzv7y_U-whd49OOddpYuqceChUHKmtbCm_YSwTBKtp1csEYBk6SxCIRT8dKQcdQC-MBclTzEPbjfi0rk_QPFYW0eK_s30DlQm8EW2ilNCkfyPzwjqi4hXCcSMELMsVA9_wAAtkftG1E3i6iDdpS5gO0E-vT-a-SwQivlI1EHtjGHeetwpMkl9cjsjxRPrbDma6Jk1ErOtBg";
@@ -54,17 +55,19 @@ export default function Navbar({ onNavigate, currentPage }) {
           >
             Complaint
           </a>
-          <a 
-            onClick={(e) => handleLinkClick('dashboard', e)}
-            className={`font-label-md text-label-md py-xs cursor-pointer border-none bg-transparent ${
-              currentPage === 'dashboard' 
-                ? 'text-primary border-b-2 border-primary' 
-                : 'text-on-surface-variant hover:text-secondary transition-colors duration-200'
-            }`}
-            href="#"
-          >
-            Dashboard
-          </a>
+          {isLoggedIn && (
+            <a 
+              onClick={(e) => handleLinkClick('dashboard', e)}
+              className={`font-label-md text-label-md py-xs cursor-pointer border-none bg-transparent ${
+                currentPage === 'dashboard' 
+                  ? 'text-primary border-b-2 border-primary' 
+                  : 'text-on-surface-variant hover:text-secondary transition-colors duration-200'
+              }`}
+              href="#"
+            >
+              Dashboard
+            </a>
+          )}
           <a 
             onClick={(e) => handleLinkClick('support', e)}
             className={`font-label-md text-label-md py-xs cursor-pointer border-none bg-transparent ${
@@ -76,40 +79,46 @@ export default function Navbar({ onNavigate, currentPage }) {
           >
             FAQs
           </a>
-          <a 
-            onClick={(e) => handleLinkClick('profile', e)}
-            className={`font-label-md text-label-md py-xs cursor-pointer border-none bg-transparent ${
-              currentPage === 'profile' 
-                ? 'text-primary border-b-2 border-primary' 
-                : 'text-on-surface-variant hover:text-secondary transition-colors duration-200'
-            }`}
-            href="#"
-          >
-            Profile
-          </a>
         </nav>
 
         {/* Desktop CTA Action Buttons */}
         <div className="flex items-center gap-md">
           <div className="hidden sm:flex items-center gap-sm">
-            <button 
-              onClick={() => onNavigate('signin')}
-              className={`px-md py-sm font-label-md text-label-md rounded-lg border border-primary/20 hover:bg-primary/5 transition-all cursor-pointer ${
-                currentPage === 'signin' ? 'text-primary bg-primary/5 border-primary' : 'text-primary'
-              }`}
-            >
-              Sign In
-            </button>
-            <button 
-              onClick={() => onNavigate('signup')}
-              className={`px-md py-sm font-label-md text-label-md rounded-lg shadow-md hover:translate-y-[-2px] active:scale-95 transition-all cursor-pointer ${
-                currentPage === 'signup' 
-                  ? 'bg-primary-container text-on-primary' 
-                  : 'bg-primary text-on-primary'
-              }`}
-            >
-              Sign Up
-            </button>
+            {isLoggedIn ? (
+              <button 
+                onClick={() => onNavigate('profile')}
+                className={`px-md py-sm font-label-md text-label-md rounded-lg shadow-md hover:translate-y-[-2px] active:scale-95 transition-all cursor-pointer ${
+                  currentPage === 'profile' 
+                    ? 'bg-primary-container text-on-primary' 
+                    : 'bg-primary text-on-primary'
+                }`}
+              >
+                Profile
+              </button>
+            ) : (
+              <>
+                <button 
+                  onClick={() => onNavigate('signin')}
+                  className={`px-md py-sm font-label-md text-label-md rounded-lg transition-all cursor-pointer ${
+                    currentPage === 'signin' 
+                      ? 'bg-primary text-on-primary shadow-md hover:translate-y-[-2px] active:scale-95 border border-primary' 
+                      : 'text-primary border border-primary/20 hover:bg-primary/5 bg-transparent'
+                  }`}
+                >
+                  Sign In
+                </button>
+                <button 
+                  onClick={() => onNavigate('signup')}
+                  className={`px-md py-sm font-label-md text-label-md rounded-lg transition-all cursor-pointer ${
+                    currentPage === 'signup' 
+                      ? 'bg-primary text-on-primary shadow-md hover:translate-y-[-2px] active:scale-95 border border-primary' 
+                      : 'text-primary border border-primary/20 hover:bg-primary/5 bg-transparent'
+                  }`}
+                >
+                  Sign Up
+                </button>
+              </>
+            )}
           </div>
           
           {/* Mobile Hamburger Toggler */}
@@ -145,15 +154,17 @@ export default function Navbar({ onNavigate, currentPage }) {
             >
               Complaint
             </a>
-            <a 
-              onClick={(e) => handleLinkClick('dashboard', e)}
-              className={`font-label-md text-label-md py-xs ${
-                currentPage === 'dashboard' ? 'text-primary font-bold' : 'text-on-surface-variant'
-              }`}
-              href="#"
-            >
-              Dashboard
-            </a>
+            {isLoggedIn && (
+              <a 
+                onClick={(e) => handleLinkClick('dashboard', e)}
+                className={`font-label-md text-label-md py-xs ${
+                  currentPage === 'dashboard' ? 'text-primary font-bold' : 'text-on-surface-variant'
+                }`}
+                href="#"
+              >
+                Dashboard
+              </a>
+            )}
             <a 
               onClick={(e) => handleLinkClick('support', e)}
               className={`font-label-md text-label-md py-xs ${
@@ -163,35 +174,48 @@ export default function Navbar({ onNavigate, currentPage }) {
             >
               FAQs
             </a>
-            <a 
-              onClick={(e) => handleLinkClick('profile', e)}
-              className={`font-label-md text-label-md py-xs ${
-                currentPage === 'profile' ? 'text-primary font-bold' : 'text-on-surface-variant'
-              }`}
-              href="#"
-            >
-              Profile
-            </a>
             
             <div className="flex flex-col gap-sm pt-md border-t border-outline-variant/30">
-              <button 
-                onClick={() => {
-                  setIsMobileMenuOpen(false);
-                  onNavigate('signin');
-                }}
-                className="w-full py-sm font-label-md text-label-md text-primary border border-primary/20 rounded-lg text-center cursor-pointer hover:bg-primary/5"
-              >
-                Sign In
-              </button>
-              <button 
-                onClick={() => {
-                  setIsMobileMenuOpen(false);
-                  onNavigate('signup');
-                }}
-                className="w-full py-sm font-label-md text-label-md bg-primary text-on-primary rounded-lg text-center shadow-md cursor-pointer hover:bg-primary/95"
-              >
-                Sign Up
-              </button>
+              {isLoggedIn ? (
+                <button 
+                  onClick={() => {
+                    setIsMobileMenuOpen(false);
+                    onNavigate('profile');
+                  }}
+                  className="w-full py-sm font-label-md text-label-md bg-primary text-on-primary rounded-lg text-center shadow-md cursor-pointer hover:bg-primary/95"
+                >
+                  Profile
+                </button>
+              ) : (
+                <>
+                  <button 
+                    onClick={() => {
+                      setIsMobileMenuOpen(false);
+                      onNavigate('signin');
+                    }}
+                    className={`w-full py-sm font-label-md text-label-md rounded-lg text-center cursor-pointer transition-all ${
+                      currentPage === 'signin'
+                        ? 'bg-primary text-on-primary shadow-md hover:bg-primary/95 border border-primary'
+                        : 'text-primary border border-primary/20 hover:bg-primary/5 bg-transparent'
+                    }`}
+                  >
+                    Sign In
+                  </button>
+                  <button 
+                    onClick={() => {
+                      setIsMobileMenuOpen(false);
+                      onNavigate('signup');
+                    }}
+                    className={`w-full py-sm font-label-md text-label-md rounded-lg text-center cursor-pointer transition-all ${
+                      currentPage === 'signup'
+                        ? 'bg-primary text-on-primary shadow-md hover:bg-primary/95 border border-primary'
+                        : 'text-primary border border-primary/20 hover:bg-primary/5 bg-transparent'
+                    }`}
+                  >
+                    Sign Up
+                  </button>
+                </>
+              )}
             </div>
           </nav>
         </div>

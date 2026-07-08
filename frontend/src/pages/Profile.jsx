@@ -1,12 +1,16 @@
 import React, { useState, useEffect } from 'react';
 
 export default function Profile({ onNavigate }) {
+  // Read user data from localStorage
+  const userInfoStr = localStorage.getItem('userInfo');
+  const userInfo = userInfoStr ? JSON.parse(userInfoStr) : null;
+
   // Profile information state
-  const [name, setName] = useState('Alex Johnson');
-  const [email, setEmail] = useState('a.johnson@university.edu');
-  const [phone, setPhone] = useState('+1 (555) 012-3456');
-  const [location, setLocation] = useState('North Dormitory, Wing B');
-  const studentId = '#SM-2024-8832';
+  const [name, setName] = useState(userInfo?.name || '');
+  const [email, setEmail] = useState(userInfo?.email || '');
+  const [phone, setPhone] = useState(userInfo?.phone || '');
+  const [location, setLocation] = useState('');
+  const studentId = userInfo?.email ? userInfo.email.split('@')[0] : '';
   
   // Profile picture index for selection/cycling
   const [avatarIndex, setAvatarIndex] = useState(0);
@@ -158,6 +162,7 @@ export default function Profile({ onNavigate }) {
   const handleLogout = () => {
     setIsLogoutConfirmOpen(false);
     showToast('Logging out... Redirecting to home.', 'info');
+    localStorage.removeItem('userInfo');
     setTimeout(() => {
       onNavigate('home');
     }, 1000);

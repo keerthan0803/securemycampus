@@ -14,7 +14,7 @@ const { protect } = require('../middleware/authMiddleware');
 // Define rate limiter for auth routes (Max 5 requests per 15 minutes per IP)
 const authLimiter = rateLimit({
   windowMs: 15 * 60 * 1000,
-  max: 5,
+  max: 50,
   message: {
     message: 'Too many attempts from this IP, please try again after 15 minutes'
   },

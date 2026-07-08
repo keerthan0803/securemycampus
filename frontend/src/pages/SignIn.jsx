@@ -37,8 +37,7 @@ export default function SignIn({ onNavigate }) {
       .then((data) => {
         setIsLoading(false);
         localStorage.setItem('userInfo', JSON.stringify(data));
-        alert(`Welcome back, ${data.name}! You are logged in as a ${data.role}.`);
-        onNavigate('home');
+        onNavigate('complaints');
       })
       .catch((err) => {
         setIsLoading(false);
@@ -67,8 +66,7 @@ export default function SignIn({ onNavigate }) {
       .then((data) => {
         setIsLoading(false);
         localStorage.setItem('userInfo', JSON.stringify(data));
-        alert(`Welcome back, ${data.name}! You are logged in as a ${data.role}.`);
-        onNavigate('home');
+        onNavigate('complaints');
       })
       .catch((err) => {
         setIsLoading(false);

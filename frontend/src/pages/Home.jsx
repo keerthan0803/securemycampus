@@ -8,6 +8,8 @@ import Contact from '../components/home/Contact';
 import EmergencyFab from '../components/home/EmergencyFab';
 
 export default function Home({ onNavigate }) {
+  const isLoggedIn = !!localStorage.getItem('userInfo');
+
   useEffect(() => {
     // Add scroll listener for navbar shadow customization (if class exists)
     const handleScroll = () => {
@@ -62,28 +64,28 @@ export default function Home({ onNavigate }) {
 
   const handleFeatureClick = (featureId) => {
     if (featureId === 'complaint') {
-      onNavigate('signup'); // Prompt user to register/login
+      onNavigate(isLoggedIn ? 'complaints' : 'signup'); // Navigate to complaints if logged in, else prompt to register
     } else if (featureId === 'help') {
       // Scroll to contact section
       const contactSection = document.querySelector('.contact');
       contactSection?.scrollIntoView({ behavior: 'smooth' });
     } else if (featureId === 'profile') {
-      onNavigate('profile');
+      onNavigate(isLoggedIn ? 'profile' : 'signin');
     } else {
-      onNavigate('signin');
+      onNavigate(isLoggedIn ? 'dashboard' : 'signin');
     }
   };
 
   return (
     <div className="w-full flex flex-col">
       <Hero 
-        onGetStarted={() => onNavigate('signup')} 
+        onGetStarted={() => onNavigate(isLoggedIn ? 'complaints' : 'signup')} 
         onLearnMore={() => {
           const aboutSection = document.querySelector('.features');
           aboutSection?.scrollIntoView({ behavior: 'smooth' });
         }}
       />
-      <Announcements onViewAll={() => onNavigate('signin')} />
+      <Announcements onViewAll={() => onNavigate(isLoggedIn ? 'dashboard' : 'signin')} />
       <Features onFeatureClick={handleFeatureClick} />
       <Stats />
       <About />

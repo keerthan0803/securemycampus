@@ -43,6 +43,7 @@ export default function SignUp({ onNavigate }) {
         name: username,
         email: email,
         password: password,
+        phone: phone,
       }),
     })
       .then((res) => {
@@ -55,7 +56,6 @@ export default function SignUp({ onNavigate }) {
       })
       .then((data) => {
         setIsLoading(false);
-        alert('Registration successful! Please login.');
         
         // Reset fields
         setUsername('');
@@ -95,8 +95,7 @@ export default function SignUp({ onNavigate }) {
       .then((data) => {
         setIsLoading(false);
         localStorage.setItem('userInfo', JSON.stringify(data));
-        alert(`Registration successful! Welcome, ${data.name}. Logged in as ${data.role}.`);
-        onNavigate('home');
+        onNavigate('complaints');
       })
       .catch((err) => {
         setIsLoading(false);

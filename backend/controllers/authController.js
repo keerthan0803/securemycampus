@@ -44,9 +44,9 @@ const registerUser = async (req, res, next) => {
     let role;
     if (email === 'securemycampus485164@gmail.com') {
       role = 'admin';
-    } else if (!email.endsWith('@anurag.edu.in')) {
+    } else if (!email.endsWith('@anurag.edu.in') && !email.endsWith('@securemycampus.edu')) {
       res.status(400);
-      return next(new Error('Only @anurag.edu.in email addresses are allowed (except for admin).'));
+      return next(new Error('Only @securemycampus.edu or @anurag.edu.in email addresses are allowed (except for admin).'));
     } else {
       const localPart = email.split('@')[0];
       if (/^[a-zA-Z]+$/.test(localPart)) {
@@ -150,9 +150,9 @@ const googleAuth = async (req, res, next) => {
     let role;
     if (email === 'securemycampus485164@gmail.com') {
       role = 'admin';
-    } else if (!email.endsWith('@anurag.edu.in')) {
+    } else if (!email.endsWith('@anurag.edu.in') && !email.endsWith('@securemycampus.edu')) {
       res.status(400);
-      return next(new Error('Only @anurag.edu.in email addresses are allowed (except for admin).'));
+      return next(new Error('Only @securemycampus.edu or @anurag.edu.in email addresses are allowed (except for admin).'));
     } else {
       const localPart = email.split('@')[0];
       if (/^[a-zA-Z]+$/.test(localPart)) {

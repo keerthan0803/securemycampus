@@ -8,6 +8,7 @@ import Complaints from './pages/Complaints';
 import FacultyDashboard from './pages/FacultyDashboard';
 import Support from './pages/Support';
 import Profile from './pages/Profile';
+import Form from './pages/form/Form';
 
 export default function App() {
   const [currentPage, setCurrentPage] = useState('home');
@@ -28,6 +29,8 @@ export default function App() {
         return <Support onNavigate={setCurrentPage} />;
       case 'profile':
         return <Profile onNavigate={setCurrentPage} />;
+      case 'form':
+        return <Form onNavigate={setCurrentPage} />;
       case 'home':
       default:
         return <Home onNavigate={setCurrentPage} />;

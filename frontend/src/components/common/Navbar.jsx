@@ -45,6 +45,17 @@ export default function Navbar({ onNavigate, currentPage }) {
             Home
           </a>
           <a 
+            onClick={(e) => handleLinkClick('form', e)}
+            className={`font-label-md text-label-md py-xs cursor-pointer border-none bg-transparent ${
+              currentPage === 'form' 
+                ? 'text-primary border-b-2 border-primary' 
+                : 'text-on-surface-variant hover:text-secondary transition-colors duration-200'
+            }`}
+            href="#"
+          >
+            Form Page
+          </a>
+          <a 
             onClick={(e) => handleLinkClick('complaints', e)}
             className={`font-label-md text-label-md py-xs cursor-pointer border-none bg-transparent ${
               currentPage === 'complaints' 
@@ -53,7 +64,7 @@ export default function Navbar({ onNavigate, currentPage }) {
             }`}
             href="#"
           >
-            Complaint
+            Complaints Feed
           </a>
           {isLoggedIn && (
             <a 
@@ -146,13 +157,22 @@ export default function Navbar({ onNavigate, currentPage }) {
               Home
             </a>
             <a 
+              onClick={(e) => handleLinkClick('form', e)}
+              className={`font-label-md text-label-md py-xs ${
+                currentPage === 'form' ? 'text-primary font-bold' : 'text-on-surface-variant'
+              }`}
+              href="#"
+            >
+              Form Page
+            </a>
+            <a 
               onClick={(e) => handleLinkClick('complaints', e)}
               className={`font-label-md text-label-md py-xs ${
                 currentPage === 'complaints' ? 'text-primary font-bold' : 'text-on-surface-variant'
               }`}
               href="#"
             >
-              Complaint
+              Complaints Feed
             </a>
             {isLoggedIn && (
               <a 

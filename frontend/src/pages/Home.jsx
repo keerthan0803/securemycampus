@@ -63,8 +63,9 @@ export default function Home({ onNavigate }) {
   };
 
   const handleFeatureClick = (featureId) => {
+    const isLoggedIn = !!localStorage.getItem('userInfo');
     if (featureId === 'complaint') {
-      onNavigate(isLoggedIn ? 'complaints' : 'signup'); // Navigate to complaints if logged in, else prompt to register
+      onNavigate(isLoggedIn ? 'form' : 'signin');
     } else if (featureId === 'help') {
       // Scroll to contact section
       const contactSection = document.querySelector('.contact');

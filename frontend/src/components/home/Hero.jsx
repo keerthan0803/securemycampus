@@ -12,7 +12,7 @@ export default function Hero({ onGetStarted, onLearnMore }) {
             Ensuring a <span className="text-on-primary-container">Safer Campus</span> for Everyone
           </h1>
           <p className="font-body-lg text-body-lg opacity-90 max-w-xl">
-            A centralized, secure, and rapid response platform designed for the students and faculty of Secure My Campus. Report incidents, track safety, and stay informed with real-time campus updates.
+            A centralized, secure, and rapid response platform designed for the students and faculty of Anurag University. Report incidents, track safety, and stay informed with real-time campus updates.
           </p>
           <div className="flex flex-wrap gap-md pt-md">
             <button

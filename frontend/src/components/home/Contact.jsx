@@ -27,8 +27,8 @@ export default function Contact({
   return (
     <section className="contact py-3xl bg-surface-container-low border-t border-outline-variant/30">
       <div className="container mx-auto px-gutter">
-        <div className="flex flex-col lg:flex-row justify-between items-start gap-2xl">
-          <div className="max-w-md">
+        <div className="flex flex-col lg:flex-row justify-between items-center gap-2xl">
+          <div className="max-w-md w-full">
             <h2 className="font-headline-md text-headline-md text-primary mb-md">Contact Campus Security</h2>
             <p className="font-body-md text-on-surface-variant mb-xl">
               Available 24/7 for emergencies, inquiries, and technical support.

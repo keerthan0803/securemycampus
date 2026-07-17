@@ -21,6 +21,30 @@ const createComplaint = async (req, res, next) => {
   }
 };
 
+// @desc    Get harassment complaints
+// @route   GET /api/complaints/harassment
+// @access  Private (Faculty/Admin only)
+const getHarassmentComplaints = async (req, res, next) => {
+  try {
+    const complaints = await Complaint.find({ category: 'harassment' })
+      .populate('user', 'name role')
+      .sort({ createdAt: -1 });
+
+    // Sanitize anonymous complaints
+    const sanitizedComplaints = complaints.map((complaint) => {
+      const plainObj = complaint.toObject();
+      if (plainObj.isAnonymous) {
+        plainObj.user = { name: 'Anonymous User' };
+      }
+      return plainObj;
+    });
+
+    res.json(sanitizedComplaints);
+  } catch (error) {
+    next(error);
+  }
+};
+
 // @desc    Get all complaints
 // @route   GET /api/complaints
 // @access  Private
@@ -129,4 +153,5 @@ module.exports = {
   getComplaintById,
   updateComplaintStatus,
   upvoteComplaint,
+  getHarassmentComplaints,
 };

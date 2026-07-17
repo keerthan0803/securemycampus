@@ -1,69 +1,72 @@
 import React, { useState, useEffect } from 'react';
 import Card from '../components/ui/Card';
 
-const INITIAL_COMPLAINTS = [
-  {
-    id: 'CMP-9203',
-    title: 'Flickering Lighting - Sector 4',
-    description: 'Main walkway lights are intermittently failing near the library entrance, creating dark spots.',
-    fullText: 'The lights near the North gate are flickering very badly. It is almost pitch black in some areas during the change of shifts. Feels unsafe for students leaving late.',
-    category: 'security',
-    status: 'pending',
-    priority: 'high',
-    location: 'Engineering Block North',
-    city: 'Hyderabad',
-    phone: '+91 98765 43210',
-    date: 'Oct 24, 2023 | 08:15 PM',
-    timeLeft: 2535, // in seconds (42m 15s)
-    image: 'https://lh3.googleusercontent.com/aida-public/AB6AXuBQQuPgfI-AkGxWITm_uh7u7hUpcaHfBsH0DhObiw951cV2yNAFpy1d-NvDS2ntaOAmWbwNt1AJErpiq5uqUv_ObQRMhafPiJYMob4-0Gq2jAHINZcCcLJu_9wFKEqqibDATzJa5hUXJi8wA2PvKBxsEFiV2oBXzMwS__JfkgQLPkvB3rz7FkHA_BAoIC317bg1WMqaKGalG0bCreYY19TUpiIg-GaDsL0ASEDxtVgGQcfPOeZ_UYOo'
-  },
-  {
-    id: 'CMP-8812',
-    title: 'Elevator Malfunction - Block C',
-    description: 'Elevator No. 2 in the administrative block is stopping between floors frequently.',
-    fullText: 'The lift stalled between the 3rd and 4th floor for about 5 minutes today. This is the third time this week. Staff are hesitant to use it.',
-    category: 'maintenance',
-    status: 'investigating',
-    priority: 'medium',
-    location: 'Central Plaza Elevators',
-    city: 'Hyderabad',
-    phone: '+91 88990 11223',
-    date: 'Oct 25, 2023 | 09:30 AM',
-    timeLeft: 765, // in seconds (12m 45s)
-    image: 'https://lh3.googleusercontent.com/aida-public/AB6AXuAUXPNo8zPLpX8p-zCn7k6VOODAV7E1RtHB59dYn7KjxjSN4NtpMsb3FehMnYPGHRrTYRj3Nkcbjc-v4SY9-5DrCN2qyzTSUczzUhYMZz5ageU71sd5gRZIw6X8Dq1l-xhhfSKv4UwP1GWhnfP1biPUreddLdf2N49TgXszi_MCdo8vusWoyWIXx1HRVvx2Lmxbexsklx61iTRcPgp57VOS1ZHTrfKoCExyVUBiya17pDrVapyLIs24'
-  },
-  {
-    id: 'CMP-7741',
-    title: 'Medical Kit Refill',
-    description: 'The first aid station in the Gymnasium needs restocking of bandages and antiseptic.',
-    fullText: 'The emergency kit near the treadmill area is empty. Please restock as soon as possible for evening peak hours.',
-    category: 'medical',
-    status: 'resolved',
-    priority: 'low',
-    location: 'Sports Complex East',
-    city: 'Hyderabad',
-    phone: '+91 77665 44332',
-    date: 'Oct 23, 2023 | 02:00 PM',
-    timeLeft: 0,
-    image: 'https://lh3.googleusercontent.com/aida-public/AB6AXuDIBE7QNolsnmNGci-O7Iuy7YlWXkfx8r-a53qrx6-INaML-XohhmpWg7q3Mk67xr3m7ki-hpbbK5fg-1wHg28IVOPrKCwSlXaB-K6XwaactpI37fvGty-KRiB_FdoqBPLY9FgDjQMHRuQLHNpcfyILhtpOxadlgF7yG67w3tOAYfB-rSKyp2vcedtyn-Fac0iwigxAf49yBgeM9LFyVxEGVWKGos7xRma0SEf8TfX1J8PuWHHwJBBa'
-  }
-];
-
 export default function Complaints() {
-  const [complaints, setComplaints] = useState(INITIAL_COMPLAINTS);
+  const [complaints, setComplaints] = useState([]);
+  const [isLoading, setIsLoading] = useState(true);
   const [search, setSearch] = useState('');
   const [categoryFilter, setCategoryFilter] = useState('all');
   const [statusFilter, setStatusFilter] = useState('all');
   const [flippedCards, setFlippedCards] = useState({});
-  
+
   // Submit modal state
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [newTitle, setNewTitle] = useState('');
   const [newDesc, setNewDesc] = useState('');
-  const [newCategory, setNewCategory] = useState('security');
+  const [newCategory, setNewCategory] = useState('harassment');
   const [newLocation, setNewLocation] = useState('');
   const [newPhone, setNewPhone] = useState('');
   const [newPriority, setNewPriority] = useState('medium');
+  const [newImage, setNewImage] = useState(null);
+
+  // Fetch complaints from backend
+  useEffect(() => {
+    const userInfoStr = localStorage.getItem('userInfo');
+    const token = userInfoStr ? JSON.parse(userInfoStr).token : null;
+    
+    if (token) {
+      fetch('http://localhost:5000/api/complaints', {
+        headers: {
+          'Authorization': `Bearer ${token}`
+        }
+      })
+      .then(res => res.json())
+      .then(data => {
+         if (Array.isArray(data)) {
+           const mappedComplaints = data.map(c => ({
+             id: c._id,
+             title: c.title,
+             description: c.description,
+             fullText: c.description,
+             category: c.category,
+             status: c.status,
+             priority: 'medium',
+             location: 'Campus',
+             city: 'Hyderabad',
+             phone: 'N/A',
+             date: new Date(c.createdAt).toLocaleString('en-US', {
+                month: 'short',
+                day: 'numeric',
+                year: 'numeric',
+                hour: '2-digit',
+                minute: '2-digit',
+                hour12: true,
+             }),
+             timeLeft: 7200,
+             image: 'https://lh3.googleusercontent.com/aida-public/AB6AXuBQQuPgfI-AkGxWITm_uh7u7hUpcaHfBsH0DhObiw951cV2yNAFpy1d-NvDS2ntaOAmWbwNt1AJErpiq5uqUv_ObQRMhafPiJYMob4-0Gq2jAHINZcCcLJu_9wFKEqqibDATzJa5hUXJi8wA2PvKBxsEFiV2oBXzMwS__JfkgQLPkvB3rz7FkHA_BAoIC317bg1WMqaKGalG0bCreYY19TUpiIg-GaDsL0ASEDxtVgGQcfPOeZ_UYOo'
+           }));
+           setComplaints(mappedComplaints);
+         }
+         setIsLoading(false);
+      })
+      .catch((err) => {
+        console.error(err);
+        setIsLoading(false);
+      });
+    } else {
+      setIsLoading(false);
+    }
+  }, []);
 
   // Timer simulation loop
   useEffect(() => {
@@ -141,7 +144,9 @@ export default function Complaints() {
         hour12: true,
       }),
       timeLeft: newPriority === 'high' ? 3600 : newPriority === 'medium' ? 7200 : 10800,
-      image: newCategory === 'security'
+      image: newImage 
+        ? URL.createObjectURL(newImage)
+        : newCategory === 'maintenance'
         ? 'https://lh3.googleusercontent.com/aida-public/AB6AXuBQQuPgfI-AkGxWITm_uh7u7hUpcaHfBsH0DhObiw951cV2yNAFpy1d-NvDS2ntaOAmWbwNt1AJErpiq5uqUv_ObQRMhafPiJYMob4-0Gq2jAHINZcCcLJu_9wFKEqqibDATzJa5hUXJi8wA2PvKBxsEFiV2oBXzMwS__JfkgQLPkvB3rz7FkHA_BAoIC317bg1WMqaKGalG0bCreYY19TUpiIg-GaDsL0ASEDxtVgGQcfPOeZ_UYOo'
         : 'https://lh3.googleusercontent.com/aida-public/AB6AXuAUXPNo8zPLpX8p-zCn7k6VOODAV7E1RtHB59dYn7KjxjSN4NtpMsb3FehMnYPGHRrTYRj3Nkcbjc-v4SY9-5DrCN2qyzTSUczzUhYMZz5ageU71sd5gRZIw6X8Dq1l-xhhfSKv4UwP1GWhnfP1biPUreddLdf2N49TgXszi_MCdo8vusWoyWIXx1HRVvx2Lmxbexsklx61iTRcPgp57VOS1ZHTrfKoCExyVUBiya17pDrVapyLIs24'
     };
@@ -152,10 +157,11 @@ export default function Complaints() {
     // Reset Form
     setNewTitle('');
     setNewDesc('');
-    setNewCategory('security');
+    setNewCategory('harassment');
     setNewLocation('');
     setNewPhone('');
     setNewPriority('medium');
+    setNewImage(null);
   };
 
   // Filter complaints list
@@ -202,11 +208,11 @@ export default function Complaints() {
                 value={categoryFilter}
                 onChange={(e) => setCategoryFilter(e.target.value)}
               >
-                <option value="all">All Categories</option>
-                <option value="security">Security</option>
-                <option value="maintenance">Maintenance</option>
+                <option value="all">All Types</option>
                 <option value="harassment">Harassment</option>
-                <option value="medical">Medical Emergency</option>
+                <option value="lost_found">Lost &amp; Found</option>
+                <option value="food">Food Issue</option>
+                <option value="maintenance">Maintenance</option>
               </select>
               <select
                 className="bg-surface-container-low border border-outline-variant rounded-lg px-md py-sm font-label-md text-label-md text-on-surface-variant focus:ring-2 focus:ring-primary outline-none cursor-pointer"
@@ -223,21 +229,25 @@ export default function Complaints() {
         </div>
 
         {/* Complaints Grid */}
-        {filteredComplaints.length === 0 ? (
+        {isLoading ? (
+          <div className="flex justify-center py-3xl w-full">
+            <span className="material-symbols-outlined animate-spin text-primary text-[48px]">autorenew</span>
+          </div>
+        ) : filteredComplaints.length === 0 ? (
           <div className="flex flex-col items-center justify-center py-3xl text-center w-full">
             <div className="w-24 h-24 bg-surface-container rounded-full flex items-center justify-center mb-lg">
-              <span className="material-symbols-outlined text-primary text-[48px] select-none">search_off</span>
+              <span className="material-symbols-outlined text-primary text-[48px] select-none">inbox</span>
             </div>
-            <h3 className="font-headline-md text-headline-md text-primary mb-xs">No matching complaints found</h3>
-            <p className="text-on-surface-variant">Try adjusting your filters or search keywords.</p>
+            <h3 className="font-headline-md text-headline-md text-primary mb-xs">No complaints yet</h3>
+            <p className="text-on-surface-variant">There are currently no complaints in the system.</p>
           </div>
         ) : (
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-xl">
             {filteredComplaints.map((c) => {
               const isFlipped = !!flippedCards[c.id];
               return (
-                <div 
-                  key={c.id} 
+                <div
+                  key={c.id}
                   className="card-container group select-none"
                   onClick={() => handleCardClick(c.id)}
                 >
@@ -250,15 +260,14 @@ export default function Complaints() {
                           src={c.image}
                           alt={c.title}
                         />
-                        <div className={`absolute top-md right-md px-sm py-xs rounded-full font-label-md text-[10px] uppercase tracking-wider text-white ${
-                          c.status === 'resolved' 
-                            ? 'bg-primary' 
-                            : c.priority === 'high' 
-                            ? 'bg-error' 
-                            : c.priority === 'medium' 
-                            ? 'bg-secondary' 
-                            : 'bg-outline'
-                        }`}>
+                        <div className={`absolute top-md right-md px-sm py-xs rounded-full font-label-md text-[10px] uppercase tracking-wider text-white ${c.status === 'resolved'
+                            ? 'bg-primary'
+                            : c.priority === 'high'
+                              ? 'bg-error'
+                              : c.priority === 'medium'
+                                ? 'bg-secondary'
+                                : 'bg-outline'
+                          }`}>
                           {c.status === 'resolved' ? 'Resolved' : c.status === 'investigating' ? 'In Progress' : `${c.priority} Priority`}
                         </div>
                       </div>
@@ -320,7 +329,7 @@ export default function Complaints() {
 
                       <div className="mt-auto grid grid-cols-2 gap-md">
                         {c.status === 'resolved' ? (
-                          <button 
+                          <button
                             className="bg-surface-container-high text-outline py-sm rounded-lg font-label-md flex items-center justify-center gap-xs cursor-not-allowed border border-outline-variant/30"
                             disabled
                             onClick={(e) => e.stopPropagation()}
@@ -329,7 +338,7 @@ export default function Complaints() {
                             Resolved
                           </button>
                         ) : (
-                          <button 
+                          <button
                             onClick={(e) => handleSolve(c.id, e)}
                             className="bg-primary text-on-primary py-sm rounded-lg font-label-md flex items-center justify-center gap-xs hover:bg-secondary transition-all active:scale-95 cursor-pointer"
                           >
@@ -337,7 +346,7 @@ export default function Complaints() {
                             Solve
                           </button>
                         )}
-                        <button 
+                        <button
                           onClick={(e) => handleDismiss(c.id, e)}
                           className="border border-error text-error py-sm rounded-lg font-label-md flex items-center justify-center gap-xs hover:bg-error/10 transition-all active:scale-95 cursor-pointer"
                         >
@@ -355,7 +364,7 @@ export default function Complaints() {
       </section>
 
       {/* FAB Floating action button */}
-      <button 
+      <button
         onClick={() => setIsModalOpen(true)}
         className="fixed bottom-xl right-xl z-50 bg-primary text-on-primary px-xl py-md rounded-full shadow-lg hover:shadow-2xl hover:scale-105 active:scale-95 transition-all flex items-center gap-sm font-label-md group cursor-pointer border-none focus:outline-none"
       >
@@ -365,22 +374,22 @@ export default function Complaints() {
 
       {/* Report an Issue Modal Drawer */}
       {isModalOpen && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 backdrop-blur-sm p-md animate-fade-in">
-          <div className="bg-surface-container-lowest border border-outline-variant rounded-2xl w-full max-w-lg shadow-2xl overflow-hidden animate-slide-up">
-            <div className="flex justify-between items-center p-lg border-b border-outline-variant/30 bg-surface">
+        <div className="fixed inset-0 z-40 flex items-center justify-center bg-black/50 backdrop-blur-sm p-md pt-24 animate-fade-in">
+          <div className="bg-surface-container-lowest border border-outline-variant rounded-2xl w-full max-w-lg shadow-2xl overflow-hidden flex flex-col animate-slide-up max-h-[calc(100vh-7rem)]">
+            <div className="flex justify-between items-center p-lg border-b border-outline-variant/30 bg-surface shrink-0">
               <h2 className="font-headline-md text-headline-md text-primary flex items-center gap-sm">
                 <span className="material-symbols-outlined text-primary">add_alert</span>
                 Report Campus Issue
               </h2>
-              <button 
+              <button
                 onClick={() => setIsModalOpen(false)}
                 className="material-symbols-outlined text-on-surface-variant hover:text-primary cursor-pointer p-xs hover:bg-surface-container-high rounded-full select-none"
               >
                 close
               </button>
             </div>
-            
-            <form onSubmit={handleCreateComplaint} className="p-lg space-y-md">
+
+            <form onSubmit={handleCreateComplaint} className="p-lg space-y-md overflow-y-auto">
               <div>
                 <label className="block font-label-md text-label-md text-on-surface mb-xs" htmlFor="title">
                   Subject / Title <span className="text-error">*</span>
@@ -407,10 +416,10 @@ export default function Complaints() {
                     value={newCategory}
                     onChange={(e) => setNewCategory(e.target.value)}
                   >
-                    <option value="security">Security</option>
+                    <option value="harassment">Harassment</option>
+                    <option value="lost_found">Lost &amp; Found</option>
+                    <option value="food">Food Issue</option>
                     <option value="maintenance">Maintenance</option>
-                    <option value="harassment">Campus Conduct</option>
-                    <option value="medical">Medical Emergency</option>
                   </select>
                 </div>
                 <div>
@@ -456,6 +465,19 @@ export default function Complaints() {
                   type="tel"
                   value={newPhone}
                   onChange={(e) => setNewPhone(e.target.value)}
+                />
+              </div>
+
+              <div>
+                <label className="block font-label-md text-label-md text-on-surface mb-xs" htmlFor="image">
+                  Attach Image (Optional)
+                </label>
+                <input
+                  id="image"
+                  className="w-full px-md py-sm bg-white border border-outline-variant rounded-lg focus:ring-2 focus:ring-primary outline-none font-body-md file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-primary/10 file:text-primary hover:file:bg-primary/20 cursor-pointer mb-md"
+                  type="file"
+                  accept="image/*"
+                  onChange={(e) => setNewImage(e.target.files[0])}
                 />
               </div>
 

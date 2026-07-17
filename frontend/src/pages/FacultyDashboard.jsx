@@ -1,56 +1,47 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import Card from '../components/ui/Card';
 
-const INITIAL_CASES = [
-  {
-    id: 'CMP-782',
-    studentName: 'Rahul Sharma',
-    dept: 'CSE - 3rd Year',
-    avatarInitials: 'RS',
-    category: 'security',
-    subject: 'Flickering Lights North Gate',
-    description: 'The lights near the North gate are flickering very badly. It is almost pitch black in some areas during the change of shifts. Feels unsafe for students leaving late.',
-    date: 'Oct 12, 2023',
-    status: 'open', // open, in_progress, resolved
-  },
-  {
-    id: 'CMP-781',
-    studentName: 'Ananya Patel',
-    dept: 'ECE - 2nd Year',
-    avatarInitials: 'AP',
-    category: 'academic',
-    subject: 'Library Lab Equipment Access',
-    description: 'We need permission to access the DSP lab equipment after 5 PM for our semester project. The security guards are locking the labs early.',
-    date: 'Oct 11, 2023',
-    status: 'in_progress',
-  },
-  {
-    id: 'CMP-764',
-    studentName: 'Vikram Singh',
-    dept: 'EEE - 4th Year',
-    avatarInitials: 'VS',
-    category: 'maintenance',
-    subject: 'Power Socket Damage Block B',
-    description: 'Multiple electrical sockets on the second floor of Block B are damaged or broken. Needs immediate replacement to avoid safety hazards.',
-    date: 'Oct 09, 2023',
-    status: 'resolved',
-  },
-  {
-    id: 'CMP-759',
-    studentName: 'Priya Sen',
-    dept: 'Civil - 1st Year',
-    avatarInitials: 'PS',
-    category: 'harassment',
-    subject: 'Ragging Alert Near Cafeteria',
-    description: 'Experienced senior students asking juniors to stand for long periods near the canteen. Kindly monitor this area during lunch hours.',
-    date: 'Oct 08, 2023',
-    status: 'open',
-  }
-];
-
 export default function FacultyDashboard() {
-  const [cases, setCases] = useState(INITIAL_CASES);
+  const [cases, setCases] = useState([]);
+  const [isLoading, setIsLoading] = useState(true);
   const [search, setSearch] = useState('');
+
+  useEffect(() => {
+    const userInfoStr = localStorage.getItem('userInfo');
+    const token = userInfoStr ? JSON.parse(userInfoStr).token : null;
+    
+    if (token) {
+      fetch('http://localhost:5000/api/complaints', {
+        headers: {
+          'Authorization': `Bearer ${token}`
+        }
+      })
+      .then(res => res.json())
+      .then(data => {
+         if (Array.isArray(data)) {
+           const mappedCases = data.map(c => ({
+             id: c._id,
+             studentName: c.user?.name || 'Student (Anonymous)',
+             dept: 'N/A',
+             avatarInitials: (c.user?.name || 'S')[0].toUpperCase(),
+             category: c.category,
+             subject: c.title,
+             description: c.description,
+             date: new Date(c.createdAt).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' }),
+             status: c.status === 'pending' ? 'open' : c.status === 'investigating' ? 'in_progress' : 'resolved',
+           }));
+           setCases(mappedCases);
+         }
+         setIsLoading(false);
+      })
+      .catch((err) => {
+        console.error(err);
+        setIsLoading(false);
+      });
+    } else {
+      setIsLoading(false);
+    }
+  }, []);
   const [categoryFilter, setCategoryFilter] = useState('');
   const [statusFilter, setStatusFilter] = useState('');
   
@@ -108,14 +99,14 @@ export default function FacultyDashboard() {
 
   const getCategoryBadgeClass = (category) => {
     switch (category) {
-      case 'security':
+      case 'harassment':
         return 'bg-error-container text-on-error-container';
-      case 'academic':
+      case 'lost_found':
         return 'bg-primary-fixed text-primary';
+      case 'food':
+        return 'bg-tertiary-fixed text-tertiary-container';
       case 'maintenance':
         return 'bg-surface-container-high text-on-surface-variant';
-      case 'harassment':
-        return 'bg-tertiary-fixed text-tertiary-container';
       default:
         return 'bg-outline-variant/30 text-on-surface-variant';
     }
@@ -123,10 +114,10 @@ export default function FacultyDashboard() {
 
   const getCategoryLabel = (category) => {
     switch (category) {
-      case 'security': return 'Security Alert';
-      case 'academic': return 'Academic Grievance';
+      case 'harassment': return 'Harassment';
+      case 'lost_found': return 'Lost & Found';
+      case 'food': return 'Food Issue';
       case 'maintenance': return 'Maintenance';
-      case 'harassment': return 'Campus Conduct';
       default: return category;
     }
   };
@@ -134,16 +125,8 @@ export default function FacultyDashboard() {
   return (
     <div className="w-full min-h-screen pb-3xl">
       <div className="max-w-container-max mx-auto px-gutter">
-        {/* Welcome Section */}
-        <section className="mb-2xl pt-xl">
-          <h1 className="font-headline-lg text-headline-lg text-primary mb-xs">Faculty Portal</h1>
-          <p className="text-on-surface-variant font-body-md">
-            Oversee campus safety alerts and student complaints from a centralized dashboard.
-          </p>
-        </section>
-
         {/* Stats Grid */}
-        <section className="grid grid-cols-1 md:grid-cols-3 gap-lg mb-2xl">
+        <section className="grid grid-cols-1 md:grid-cols-3 gap-lg mb-2xl pt-xl">
           {/* Total Cases */}
           <div className="bg-surface-container-lowest p-lg rounded-xl shadow-sm border border-outline-variant flex items-center gap-lg select-none">
             <div className="w-12 h-12 rounded-lg bg-primary-fixed flex items-center justify-center text-primary">
@@ -197,11 +180,11 @@ export default function FacultyDashboard() {
               value={categoryFilter}
               onChange={(e) => setCategoryFilter(e.target.value)}
             >
-              <option value="">All Categories</option>
-              <option value="security">Security Alert</option>
-              <option value="academic">Academic Grievance</option>
+              <option value="">All Types</option>
+              <option value="harassment">Harassment</option>
+              <option value="lost_found">Lost &amp; Found</option>
+              <option value="food">Food Issue</option>
               <option value="maintenance">Maintenance</option>
-              <option value="harassment">Campus Conduct</option>
             </select>
             <select
               className="bg-white border border-outline-variant rounded-lg px-md py-sm font-label-md text-label-md text-on-surface-variant focus:border-primary outline-none cursor-pointer"
@@ -224,8 +207,23 @@ export default function FacultyDashboard() {
           </button>
         </section>
 
-        {/* Desktop View: Table */}
-        <div className="hidden md:block bg-surface-container-lowest rounded-xl shadow-lg border border-outline-variant overflow-hidden w-full">
+        {/* Empty State and Content */}
+        {isLoading ? (
+          <div className="flex justify-center py-3xl w-full">
+            <span className="material-symbols-outlined animate-spin text-primary text-[48px]">autorenew</span>
+          </div>
+        ) : filteredCases.length === 0 ? (
+          <div className="flex flex-col items-center justify-center py-3xl text-center w-full bg-surface-container-lowest rounded-xl border border-outline-variant shadow-sm">
+            <div className="w-24 h-24 bg-surface-container rounded-full flex items-center justify-center mb-lg">
+              <span className="material-symbols-outlined text-primary text-[48px] select-none">inbox</span>
+            </div>
+            <h3 className="font-headline-md text-headline-md text-primary mb-xs">No cases found</h3>
+            <p className="text-on-surface-variant">There are currently no cases matching your criteria.</p>
+          </div>
+        ) : (
+          <>
+          {/* Desktop View: Table */}
+          <div className="hidden md:block bg-surface-container-lowest rounded-xl shadow-lg border border-outline-variant overflow-hidden w-full">
           <div className="overflow-x-auto custom-scrollbar">
             <table className="w-full text-left border-collapse">
               <thead className="bg-surface-container text-on-surface-variant font-label-md text-label-md border-b border-outline-variant">
@@ -335,6 +333,8 @@ export default function FacultyDashboard() {
             </div>
           ))}
         </div>
+        </>
+        )}
       </div>
 
       {/* Case Details Modal */}

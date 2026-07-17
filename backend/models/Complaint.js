@@ -15,7 +15,7 @@ const complaintSchema = new mongoose.Schema(
     category: {
       type: String,
       required: [true, 'Please select a category'],
-      enum: ['infrastructure', 'academic', 'hostel', 'security', 'ragging', 'other'],
+      enum: ['infrastructure', 'academic', 'hostel', 'security', 'ragging', 'harassment', 'other'],
     },
     status: {
       type: String,

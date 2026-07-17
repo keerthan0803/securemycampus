@@ -6,12 +6,16 @@ const {
   getComplaintById,
   updateComplaintStatus,
   upvoteComplaint,
+  getHarassmentComplaints,
 } = require('../controllers/complaintController');
 const { protect, authorize } = require('../middleware/authMiddleware');
 
 router.route('/')
   .post(protect, createComplaint)
   .get(protect, getComplaints);
+
+router.route('/harassment')
+  .get(protect, authorize('faculty', 'admin'), getHarassmentComplaints);
 
 router.route('/:id')
   .get(protect, getComplaintById);

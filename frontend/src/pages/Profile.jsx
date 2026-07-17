@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 
 export default function Profile({ onNavigate }) {
   // Read user data from localStorage
@@ -12,13 +12,9 @@ export default function Profile({ onNavigate }) {
   const [location, setLocation] = useState('');
   const studentId = userInfo?.email ? userInfo.email.split('@')[0] : '';
   
-  // Profile picture index for selection/cycling
-  const [avatarIndex, setAvatarIndex] = useState(0);
-  const avatars = [
-    'https://lh3.googleusercontent.com/aida-public/AB6AXuDppleVFY0EyxOunB0uQRelumwx3SyngWgp9IChpzmwhVe-7RDPaUJcjnYJxBOfxfYdpNv5nA2DbMl9dS3VNRMkBGRpKMgZc7d4LNbwZZ84X2vyJpmG7vVU3bvWd_QkgHxSZYNUKVEwh2bna-yjwkxrpJUMMTyfcqiwaQeAcAwAu9nr0VDtYDjgcC1uXXfXbQFhLsvm2iBJ6gZvjoL4DcYJd4IL_ypaaQbaFUX19V7eMxwo45BkxMt5',
-    'https://lh3.googleusercontent.com/aida-public/AB6AXuA8Dw_uEOT2P6sP1p3u3M9M9yJd-1G00QZ-bxgBxWEhTpT9f7VgwpUWAb_kvUcN5QRdvmTQJpU-LbVGjrW_Pa18f6yv3bSej3uz75bSwP1qEb5VQR6uGWDlnZBtqATtekSUlvqDSIgp_76U599l_A3avy5Bwsu8y9tm-NVjMiFOqfggCVe2uunajTORhr9fHwpJsW0rTCG5ArrTSEq2ihWhBmXYzvd7lGZWqdG4v1WLWnbmJMXKEETd',
-    'https://lh3.googleusercontent.com/aida-public/AB6AXuCEBAs-_kfuwbPqM90qRaXTEfamd0I6S_2kOSqReSirXwANT65dDuINhaV8GI_zKU_uVeSuIGAA6OTT3nI3bM1Kh6YxT8I2RUA4pWSftWvcXyx8UfNaj1D-J6Y3WEmP9d27ZyEgKSfSo9czBOXtixxprHxpfUjc9d87ah8APbFfF4kT7RhkTfryMI3sc7lcii5RWGB9MCVHg2Q5s4FfRnQcbxELs4nU2KAlfCpa7Kj-s3srzm9m2BLG'
-  ];
+  // Profile picture state
+  const [profileImage, setProfileImage] = useState('/user.png');
+  const fileInputRef = useRef(null);
 
   // Edit State
   const [isEditing, setIsEditing] = useState(false);
@@ -151,11 +147,14 @@ export default function Profile({ onNavigate }) {
     showToast('Emergency contacts updated.', 'success');
   };
 
-  // Profile Image upload simulation
-  const handleAvatarChange = () => {
-    const nextIndex = (avatarIndex + 1) % avatars.length;
-    setAvatarIndex(nextIndex);
-    showToast('Profile image updated successfully!', 'success');
+  // Handle Profile Image upload
+  const handleImageUpload = (e) => {
+    const file = e.target.files[0];
+    if (file) {
+      const imageUrl = URL.createObjectURL(file);
+      setProfileImage(imageUrl);
+      showToast('Profile image updated successfully!', 'success');
+    }
   };
 
   // Confirm logout
@@ -192,10 +191,17 @@ export default function Profile({ onNavigate }) {
                 <img 
                   className="w-full h-full object-cover select-none" 
                   alt="Student Portrait" 
-                  src={avatars[avatarIndex]} 
+                  src={profileImage} 
+                />
+                <input 
+                  type="file" 
+                  accept="image/*" 
+                  ref={fileInputRef} 
+                  onChange={handleImageUpload} 
+                  className="hidden" 
                 />
                 <button 
-                  onClick={handleAvatarChange}
+                  onClick={() => fileInputRef.current.click()}
                   title="Change Avatar"
                   className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center cursor-pointer border-none w-full h-full text-white focus:outline-none"
                 >

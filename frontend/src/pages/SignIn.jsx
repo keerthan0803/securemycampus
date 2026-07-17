@@ -19,7 +19,7 @@ export default function SignIn({ onNavigate }) {
     
     setError(null);
     // Actual login API call
-    fetch('http://localhost:5000/api/auth/login', {
+    fetch(`${import.meta.env.VITE_API_URL}/api/auth/login`, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
@@ -48,7 +48,7 @@ export default function SignIn({ onNavigate }) {
   const handleGoogleLogin = (googleToken) => {
     setError(null);
     setIsLoading(true);
-    fetch('http://localhost:5000/api/auth/google', {
+    fetch(`${import.meta.env.VITE_API_URL}/api/auth/google`, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',

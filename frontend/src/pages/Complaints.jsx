@@ -24,7 +24,7 @@ export default function Complaints() {
     const token = userInfoStr ? JSON.parse(userInfoStr).token : null;
     
     if (token) {
-      fetch('http://localhost:5000/api/complaints', {
+      fetch(`${import.meta.env.VITE_API_URL}/api/complaints`, {
         headers: {
           'Authorization': `Bearer ${token}`
         }

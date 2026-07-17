@@ -36,7 +36,7 @@ export default function SignUp({ onNavigate }) {
     }
 
     // Actual database registration API
-    fetch('http://localhost:5000/api/auth/register', {
+    fetch(`${import.meta.env.VITE_API_URL}/api/auth/register`, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
@@ -83,7 +83,7 @@ export default function SignUp({ onNavigate }) {
   const handleGoogleSignup = (googleToken) => {
     setError(null);
     setIsLoading(true);
-    fetch('http://localhost:5000/api/auth/google', {
+    fetch(`${import.meta.env.VITE_API_URL}/api/auth/google`, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',

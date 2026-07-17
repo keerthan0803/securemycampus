@@ -1,6 +1,8 @@
 const jwt = require('jsonwebtoken');
+const crypto = require('crypto');
 const { OAuth2Client } = require('google-auth-library');
 const User = require('../models/User');
+const sendEmail = require('../utils/email');
 
 const client = new OAuth2Client(process.env.GOOGLE_CLIENT_ID);
 
@@ -72,20 +74,42 @@ const registerUser = async (req, res, next) => {
       password,
       role,
       phone,
+      isVerified: false,
     });
 
     if (user) {
-      const refreshToken = generateRefreshToken(user._id);
-      setRefreshTokenCookie(res, refreshToken);
+      // Generate Verification Token
+      const verificationToken = crypto.randomBytes(32).toString('hex');
+      
+      // Hash it before saving to DB for security
+      user.verificationToken = crypto.createHash('sha256').update(verificationToken).digest('hex');
+      user.verificationTokenExpires = Date.now() + 24 * 60 * 60 * 1000; // 24 hours
+      await user.save({ validateBeforeSave: false });
 
-      res.status(201).json({
-        _id: user._id,
-        name: user.name,
-        email: user.email,
-        role: user.role,
-        phone: user.phone,
-        accessToken: generateAccessToken(user._id),
-      });
+      // Create Verification URL
+      const verifyUrl = `${process.env.FRONTEND_URL || 'http://localhost:5173'}/verify-email/${verificationToken}`;
+      
+      const message = `Welcome to Secure My Campus! Please verify your email address by clicking the link below:\n\n${verifyUrl}\n\nThis link is valid for 24 hours.`;
+      
+      try {
+        await sendEmail({
+          email: user.email,
+          subject: 'Verify your email - Secure My Campus',
+          message,
+        });
+
+        res.status(201).json({
+          message: 'A verification link has been sent to your email. Please check your inbox.',
+          requiresVerification: true
+        });
+      } catch (err) {
+        // If email fails, delete the user so they can try again with correct email/credentials
+        await User.findByIdAndDelete(user._id);
+        
+        console.error('Email could not be sent', err);
+        res.status(500);
+        return next(new Error('There was an error sending the verification email. Try again later.'));
+      }
     } else {
       res.status(400);
       return next(new Error('Invalid user data'));
@@ -105,6 +129,11 @@ const loginUser = async (req, res, next) => {
     const user = await User.findOne({ email }).select('+password');
 
     if (user && (await user.matchPassword(password))) {
+      if (!user.isVerified) {
+        res.status(401);
+        return next(new Error('Please verify your email to log in'));
+      }
+
       const refreshToken = generateRefreshToken(user._id);
       setRefreshTokenCookie(res, refreshToken);
 
@@ -176,7 +205,42 @@ const googleAuth = async (req, res, next) => {
         email,
         password: generatedPassword,
         role,
+        isVerified: false,
       });
+
+      // Generate Verification Token
+      const verificationToken = crypto.randomBytes(32).toString('hex');
+      user.verificationToken = crypto.createHash('sha256').update(verificationToken).digest('hex');
+      user.verificationTokenExpires = Date.now() + 24 * 60 * 60 * 1000;
+      await user.save({ validateBeforeSave: false });
+
+      // Create Verification URL
+      const verifyUrl = `${process.env.FRONTEND_URL || 'http://localhost:5173'}/verify-email/${verificationToken}`;
+      const message = `Welcome to Secure My Campus! Please verify your email address by clicking the link below:\n\n${verifyUrl}\n\nThis link is valid for 24 hours.`;
+      
+      try {
+        await sendEmail({
+          email: user.email,
+          subject: 'Verify your email - Secure My Campus',
+          message,
+        });
+
+        return res.status(201).json({
+          message: 'A verification link has been sent to your email. Please check your inbox.',
+          requiresVerification: true
+        });
+      } catch (err) {
+        // If email fails, delete the user so they can try again
+        await User.findByIdAndDelete(user._id);
+        console.error('Email could not be sent', err);
+        res.status(500);
+        return next(new Error('There was an error sending the verification email. Try again later.'));
+      }
+    }
+
+    if (!user.isVerified) {
+      res.status(401);
+      return next(new Error('Please verify your email to log in'));
     }
 
     const refreshToken = generateRefreshToken(user._id);
@@ -260,10 +324,42 @@ const getUserProfile = async (req, res, next) => {
   }
 };
 
+// @desc    Verify user email
+// @route   GET /api/auth/verify/:token
+// @access  Public
+const verifyEmail = async (req, res, next) => {
+  try {
+    // Get hashed token
+    const hashedToken = crypto.createHash('sha256').update(req.params.token).digest('hex');
+
+    const user = await User.findOne({
+      verificationToken: hashedToken,
+      verificationTokenExpires: { $gt: Date.now() },
+    });
+
+    if (!user) {
+      res.status(400);
+      return next(new Error('Invalid or expired verification token'));
+    }
+
+    user.isVerified = true;
+    user.verificationToken = undefined;
+    user.verificationTokenExpires = undefined;
+    await user.save({ validateBeforeSave: false });
+
+    res.status(200).json({
+      message: 'Email successfully verified! You can now log in.',
+    });
+  } catch (error) {
+    next(error);
+  }
+};
+
 module.exports = {
   registerUser,
   loginUser,
   googleAuth,
+  verifyEmail,
   refreshAccessToken,
   logoutUser,
   getUserProfile,

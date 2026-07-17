@@ -1,5 +1,4 @@
 import React, { useState, useEffect } from 'react';
-import Card from '../components/ui/Card';
 
 export default function Complaints() {
   const [complaints, setComplaints] = useState([]);

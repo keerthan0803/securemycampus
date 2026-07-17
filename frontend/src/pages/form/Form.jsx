@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import Card from '../../components/ui/Card';
 
-export default function Form({ onNavigate }) {
+export default function Form() {
   // Check if user is logged in
   const userInfo = JSON.parse(localStorage.getItem('userInfo') || 'null');
   

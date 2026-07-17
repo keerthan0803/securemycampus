@@ -42,7 +42,7 @@ export default function Home({ onNavigate }) {
     }, observerOptions);
 
     const animatedElements = document.querySelectorAll(
-      '.features > div, .announcement-section > div, .stats > div, .contact > div'
+      '.features > div, .announcement-section > div, .contact > div'
     );
 
     animatedElements.forEach((el) => {

@@ -29,6 +29,7 @@ app.get('/api/health', (req, res) => {
 // Routes placeholders (will mount actual routes here)
 app.use('/api/auth', require('./routes/authRoutes'));
 app.use('/api/complaints', require('./routes/complaintRoutes'));
+app.use('/api/stats', require('./routes/statsRoutes'));
 
 // Error handling middleware
 app.use(notFound);

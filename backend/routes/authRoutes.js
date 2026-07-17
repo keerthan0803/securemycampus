@@ -5,6 +5,7 @@ const {
   registerUser,
   loginUser,
   googleAuth,
+  verifyEmail,
   refreshAccessToken,
   logoutUser,
   getUserProfile
@@ -25,6 +26,7 @@ const authLimiter = rateLimit({
 router.post('/register', authLimiter, registerUser);
 router.post('/login', authLimiter, loginUser);
 router.post('/google', authLimiter, googleAuth);
+router.post('/verify/:token', verifyEmail);
 router.post('/refresh', refreshAccessToken);
 router.post('/logout', logoutUser);
 router.get('/profile', protect, getUserProfile);

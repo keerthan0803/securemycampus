@@ -9,9 +9,15 @@ import FacultyDashboard from './pages/FacultyDashboard';
 import Support from './pages/Support';
 import Profile from './pages/Profile';
 import Form from './pages/form/Form';
+import VerifyEmail from './pages/VerifyEmail';
 
 export default function App() {
-  const [currentPage, setCurrentPage] = useState('home');
+  const [currentPage, setCurrentPage] = useState(() => {
+    if (window.location.pathname.startsWith('/verify-email')) {
+      return 'verify-email';
+    }
+    return 'home';
+  });
 
   const isAuthPage = currentPage === 'signin' || currentPage === 'signup';
 
@@ -31,6 +37,8 @@ export default function App() {
         return <Profile onNavigate={setCurrentPage} />;
       case 'form':
         return <Form onNavigate={setCurrentPage} />;
+      case 'verify-email':
+        return <VerifyEmail onNavigate={setCurrentPage} />;
       case 'home':
       default:
         return <Home onNavigate={setCurrentPage} />;

@@ -35,7 +35,7 @@ export default function Hero({ onGetStarted, onLearnMore }) {
           <img
             alt="Secure My Campus View"
             className="relative rounded-3xl shadow-2xl w-full h-[500px] object-cover border-4 border-white/20"
-            src="/homepage.png"
+            src="/homepage.jpg"
           />
         </div>
       </div>

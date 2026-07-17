@@ -24,33 +24,6 @@ const FAQS = [
   }
 ];
 
-const TEAM = [
-  {
-    name: 'Aditya Sharma',
-    role: 'Lead Developer',
-    avatar: 'https://lh3.googleusercontent.com/aida-public/AB6AXuCEBAs-_kfuwbPqM90qRaXTEfamd0I6S_2kOSqReSirXwANT65dDuINhaV8GI_zKU_uVeSuIGAA6OTT3nI3bM1Kh6YxT8I2RUA4pWSftWvcXyx8UfNaj1D-J6Y3WEmP9d27ZyEgKSfSo9czBOXtixxprHxpfUjc9d87ah8APbFfF4kT7RhkTfryMI3sc7lcii5RWGB9MCVHg2Q5s4FfRnQcbxELs4nU2KAlfCpa7Kj-s3srzm9m2BLG',
-    icons: ['code', 'terminal']
-  },
-  {
-    name: 'Priya Verma',
-    role: 'UI/UX Lead',
-    avatar: 'https://lh3.googleusercontent.com/aida-public/AB6AXuA8Dw_uEOT2P6sP1p3u3M9M9yJd-1G00QZ-bxgBxWEhTpT9f7VgwpUWAb_kvUcN5QRdvmTQJpU-LbVGjrW_Pa18f6yv3bSej3uz75bSwP1qEb5VQR6uGWDlnZBtqATtekSUlvqDSIgp_76U599l_A3avy5Bwsu8y9tm-NVjMiFOqfggCVe2uunajTORhr9fHwpJsW0rTCG5ArrTSEq2ihWhBmXYzvd7lGZWqdG4v1WLWnbmJMXKEETd',
-    icons: ['palette', 'brush']
-  },
-  {
-    name: 'Rahul Reddy',
-    role: 'Security Consultant',
-    avatar: 'https://lh3.googleusercontent.com/aida-public/AB6AXuA0j6lVIWj4oS1KVKUiBiS5dizW3QgbnryTKW9DCoMOig3z3RFstOA53ZAlycEnZsm8EyWIjlqAXPRc3IBMbBKhBZrhBGxiKf49boN4UsMfCCasMgWMb9zjIynfoLtvf-djkBTW1m4mxJ3FxsNT92Vms7du42PEUMWEkAbnZ2EeGal9AYcEX2GRH-3sSMf5BS2g7dzAqYiIrjtPR6eKOx1bQuERNBnUj-gbwtvi-MVEKECDv2NtHS0e',
-    icons: ['security', 'lock']
-  },
-  {
-    name: 'Sanya Malhotra',
-    role: 'Project Manager',
-    avatar: 'https://lh3.googleusercontent.com/aida-public/AB6AXuC_Gj9UGfsiKcazq5uAMkSYAFa_Qb4TrTOSID_0mECmX6fW32ny_FzKImlhtAygbPVSmR3Dh7QpS8CEbNZwHoAQa04bs8QM81Xo00qtKrXUvuKL0f_sAx_5i9Yc-WNG0JkbsTipmJDtN9jdKgGbH3BX6A6CuGU3euteKSJDnw4alFQt_QdLgbMtBNxfan8TsMRnD7UaNGnPgudQmdebOlxiFYs07CwcD2m1VqHNUSyVxd7AbXhrhbwi',
-    icons: ['groups', 'event_note']
-  }
-];
-
 export default function Support() {
   const [activeFaq, setActiveFaq] = useState(1); // First FAQ open by default
   const [rating, setRating] = useState(0);
@@ -242,38 +215,6 @@ export default function Support() {
             </div>
           </section>
         </div>
-
-        {/* Core Development Team Section */}
-        <section className="space-y-xl pt-lg border-t border-outline-variant/30">
-          <div className="text-center">
-            <h2 className="font-headline-md text-headline-md text-primary">Development Team</h2>
-            <p className="font-body-md text-on-surface-variant">Meet the architects behind the Secure Campus Initiative.</p>
-          </div>
-          
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-lg">
-            {TEAM.map((member, idx) => (
-              <div 
-                key={idx}
-                className="bg-surface-container-lowest rounded-xl p-lg custom-shadow custom-shadow-hover transition-all flex flex-col items-center text-center select-none border border-outline-variant/20 hover:-translate-y-1 hover:shadow-md duration-300"
-              >
-                <div className="w-20 h-20 rounded-full overflow-hidden mb-md border-2 border-primary-fixed">
-                  <img 
-                    className="w-full h-full object-cover" 
-                    src={member.avatar} 
-                    alt={member.name} 
-                  />
-                </div>
-                <h3 className="font-label-md text-label-md text-primary">{member.name}</h3>
-                <p className="font-caption text-caption text-on-surface-variant">{member.role}</p>
-                <div className="flex gap-sm mt-md text-primary-fixed-dim select-none">
-                  {member.icons.map((ico, iIdx) => (
-                    <span key={iIdx} className="material-symbols-outlined text-[20px]">{ico}</span>
-                  ))}
-                </div>
-              </div>
-            ))}
-          </div>
-        </section>
 
       </div>
     </div>

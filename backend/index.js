@@ -8,6 +8,7 @@ const { errorHandler, notFound } = require('./middleware/errorMiddleware');
 
 // Initialize express app
 const app = express();
+app.set('trust proxy', 1); // Trust first proxy (Render)
 
 // Connect to Database
 connectDB();

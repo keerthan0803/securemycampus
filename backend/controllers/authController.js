@@ -153,6 +153,7 @@ const loginUser = async (req, res, next) => {
         email: user.email,
         role: user.role,
         phone: user.phone,
+        isVerified: user.isVerified,
         accessToken: generateAccessToken(user._id),
       });
     } else {
@@ -272,6 +273,7 @@ const googleAuth = async (req, res, next) => {
       email: user.email,
       role: user.role,
       phone: user.phone,
+      isVerified: user.isVerified,
       accessToken: generateAccessToken(user._id),
     });
   } catch (error) {
@@ -334,6 +336,7 @@ const getUserProfile = async (req, res, next) => {
         email: user.email,
         role: user.role,
         phone: user.phone,
+        isVerified: user.isVerified,
       });
     } else {
       res.status(404);

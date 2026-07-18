@@ -2,7 +2,9 @@ import React, { useState } from 'react';
 
 export default function Navbar({ onNavigate, currentPage }) {
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
-  const isLoggedIn = !!localStorage.getItem('userInfo');
+  const userInfoStr = localStorage.getItem('userInfo');
+  const userInfo = userInfoStr ? JSON.parse(userInfoStr) : null;
+  const isLoggedIn = !!userInfo && userInfo.isVerified;
 
   // University Logo from the approved designs
   const logoUrl = "https://lh3.googleusercontent.com/aida-public/AB6AXuDPzRHWvLAUl6hm8aTooSB_FyFbtKAuWcJFT9-q1BXAbyGlDWkVzFjJVHpEzv7y_U-whd49OOddpYuqceChUHKmtbCm_YSwTBKtp1csEYBk6SxCIRT8dKQcdQC-MBclTzEPbjfi0rk_QPFYW0eK_s30DlQm8EW2ilNCkfyPzwjqi4hXCcSMELMsVA9_wAAtkftG1E3i6iDdpS5gO0E-vT-a-SwQivlI1EHtjGHeetwpMkl9cjsjxRPrbDma6Jk1ErOtBg";

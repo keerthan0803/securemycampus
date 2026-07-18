@@ -8,7 +8,9 @@ import Contact from '../components/home/Contact';
 import EmergencyFab from '../components/home/EmergencyFab';
 
 export default function Home({ onNavigate }) {
-  const isLoggedIn = !!localStorage.getItem('userInfo');
+  const userInfoStr = localStorage.getItem('userInfo');
+  const userInfo = userInfoStr ? JSON.parse(userInfoStr) : null;
+  const isLoggedIn = !!userInfo && userInfo.isVerified;
 
   useEffect(() => {
     // Add scroll listener for navbar shadow customization (if class exists)
@@ -63,7 +65,9 @@ export default function Home({ onNavigate }) {
   };
 
   const handleFeatureClick = (featureId) => {
-    const isLoggedIn = !!localStorage.getItem('userInfo');
+    const userInfoStr = localStorage.getItem('userInfo');
+    const userInfo = userInfoStr ? JSON.parse(userInfoStr) : null;
+    const isLoggedIn = !!userInfo && userInfo.isVerified;
     if (featureId === 'complaint') {
       onNavigate(isLoggedIn ? 'form' : 'signin');
     } else if (featureId === 'help') {

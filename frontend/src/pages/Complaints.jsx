@@ -283,7 +283,7 @@ export default function Complaints({ onNavigate }) {
       {/* Hero section */}
       <section className="relative pt-xl pb-md px-gutter max-w-container-max mx-auto">
         <div className="mb-lg">
-          <h1 className="font-display-lg text-display-lg text-primary mb-sm">Complaint Browser</h1>
+          <h1 className="font-display-lg text-display-lg text-primary mb-sm">Complaints</h1>
           <p className="text-on-surface-variant max-w-2xl font-body-lg text-body-lg">
             Maintain campus safety by monitoring and resolving reported issues. Filter through real-time complaints and take immediate action.
           </p>

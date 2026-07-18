@@ -5,6 +5,15 @@ export default function Profile({ onNavigate }) {
   const userInfoStr = localStorage.getItem('userInfo');
   const userInfo = userInfoStr ? JSON.parse(userInfoStr) : null;
 
+  // Route guard: redirect to sign-in if not logged in or unverified
+  useEffect(() => {
+    const infoStr = localStorage.getItem('userInfo');
+    const info = infoStr ? JSON.parse(infoStr) : null;
+    if (!info || !info.isVerified) {
+      onNavigate('signin');
+    }
+  }, [onNavigate]);
+
   // Profile information state
   const [name, setName] = useState(userInfo?.name || '');
   const [email, setEmail] = useState(userInfo?.email || '');

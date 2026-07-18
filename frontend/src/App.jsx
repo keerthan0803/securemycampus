@@ -42,6 +42,11 @@ export default function App() {
       case 'support':
         return <Support onNavigate={handleNavigate} />;
       case 'profile':
+        const userInfo = localStorage.getItem('userInfo') ? JSON.parse(localStorage.getItem('userInfo')) : null;
+        if (!userInfo || !userInfo.isVerified) {
+          localStorage.removeItem('userInfo');
+          return <SignIn onNavigate={handleNavigate} />;
+        }
         return <Profile onNavigate={handleNavigate} />;
       case 'form':
         return <Form onNavigate={handleNavigate} />;

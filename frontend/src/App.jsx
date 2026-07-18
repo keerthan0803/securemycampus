@@ -19,36 +19,44 @@ export default function App() {
     return 'home';
   });
 
+  const handleNavigate = (page) => {
+    setCurrentPage(page);
+    // Reset the URL to root if navigating away from a deep link
+    if (window.location.pathname !== '/') {
+      window.history.pushState({}, '', '/');
+    }
+  };
+
   const isAuthPage = currentPage === 'signin' || currentPage === 'signup';
 
   const renderContent = () => {
     switch (currentPage) {
       case 'signin':
-        return <SignIn onNavigate={setCurrentPage} />;
+        return <SignIn onNavigate={handleNavigate} />;
       case 'signup':
-        return <SignUp onNavigate={setCurrentPage} />;
+        return <SignUp onNavigate={handleNavigate} />;
       case 'complaints':
-        return <Complaints onNavigate={setCurrentPage} />;
+        return <Complaints onNavigate={handleNavigate} />;
       case 'dashboard':
-        return <FacultyDashboard onNavigate={setCurrentPage} />;
+        return <FacultyDashboard onNavigate={handleNavigate} />;
       case 'support':
-        return <Support onNavigate={setCurrentPage} />;
+        return <Support onNavigate={handleNavigate} />;
       case 'profile':
-        return <Profile onNavigate={setCurrentPage} />;
+        return <Profile onNavigate={handleNavigate} />;
       case 'form':
-        return <Form onNavigate={setCurrentPage} />;
+        return <Form onNavigate={handleNavigate} />;
       case 'verify-email':
-        return <VerifyEmail onNavigate={setCurrentPage} />;
+        return <VerifyEmail onNavigate={handleNavigate} />;
       case 'home':
       default:
-        return <Home onNavigate={setCurrentPage} />;
+        return <Home onNavigate={handleNavigate} />;
     }
   };
 
   return (
     <div className="min-h-screen flex flex-col relative overflow-hidden bg-background text-on-background selection:bg-primary-fixed-dim selection:text-on-primary-fixed">
       {/* Global Header Navigation */}
-      <Navbar onNavigate={setCurrentPage} currentPage={currentPage} />
+      <Navbar onNavigate={handleNavigate} currentPage={currentPage} />
 
       {/* Rich Decorative Gradient Ambient Circles (only show on auth pages or background overlay) */}
       <div className="absolute inset-0 z-0 overflow-hidden pointer-events-none">
@@ -68,7 +76,7 @@ export default function App() {
       </main>
 
       {/* Global Footer Section */}
-      <Footer onNavigate={setCurrentPage} />
+      <Footer onNavigate={handleNavigate} />
     </div>
   );
 }

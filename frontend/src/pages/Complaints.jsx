@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 
-export default function Complaints() {
+export default function Complaints({ onNavigate }) {
   const [complaints, setComplaints] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
   const [search, setSearch] = useState('');
@@ -21,10 +21,11 @@ export default function Complaints() {
   // Fetch complaints from backend
   useEffect(() => {
     const userInfoStr = localStorage.getItem('userInfo');
-    const token = userInfoStr ? JSON.parse(userInfoStr).token : null;
+    const userInfo = userInfoStr ? JSON.parse(userInfoStr) : null;
+    const token = userInfo ? (userInfo.token || userInfo.accessToken) : null;
     
     if (token) {
-      fetch('http://localhost:5000/api/complaints', {
+      fetch(`${import.meta.env.VITE_API_URL}/api/complaints`, {
         headers: {
           'Authorization': `Bearer ${token}`
         }
@@ -32,17 +33,19 @@ export default function Complaints() {
       .then(res => res.json())
       .then(data => {
          if (Array.isArray(data)) {
-           const mappedComplaints = data.map(c => ({
+           const mappedComplaints = data
+             .filter(c => c.status !== 'dismissed')
+             .map(c => ({
              id: c._id,
              title: c.title,
              description: c.description,
              fullText: c.description,
              category: c.category,
              status: c.status,
-             priority: 'medium',
-             location: 'Campus',
+             priority: c.priority || 'medium',
+             location: c.location || 'Campus',
              city: 'Hyderabad',
-             phone: 'N/A',
+             phone: c.phone || 'N/A',
              date: new Date(c.createdAt).toLocaleString('en-US', {
                 month: 'short',
                 day: 'numeric',
@@ -52,7 +55,9 @@ export default function Complaints() {
                 hour12: true,
              }),
              timeLeft: 7200,
-             image: 'https://lh3.googleusercontent.com/aida-public/AB6AXuBQQuPgfI-AkGxWITm_uh7u7hUpcaHfBsH0DhObiw951cV2yNAFpy1d-NvDS2ntaOAmWbwNt1AJErpiq5uqUv_ObQRMhafPiJYMob4-0Gq2jAHINZcCcLJu_9wFKEqqibDATzJa5hUXJi8wA2PvKBxsEFiV2oBXzMwS__JfkgQLPkvB3rz7FkHA_BAoIC317bg1WMqaKGalG0bCreYY19TUpiIg-GaDsL0ASEDxtVgGQcfPOeZ_UYOo'
+             image: (c.attachments && c.attachments.length > 0) 
+               ? c.attachments[0] 
+               : 'https://images.unsplash.com/photo-1541339907198-e08756dedf3f?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80'
            }));
            setComplaints(mappedComplaints);
          }
@@ -96,71 +101,169 @@ export default function Complaints() {
     }));
   };
 
-  const handleSolve = (id, e) => {
+  const handleSolve = async (id, e) => {
     e.stopPropagation();
-    setComplaints((prev) =>
-      prev.map((c) => {
-        if (c.id === id) {
-          return { ...c, status: 'resolved', timeLeft: 0 };
-        }
-        return c;
-      })
-    );
-  };
+    
+    const userInfoStr = localStorage.getItem('userInfo');
+    const userInfo = userInfoStr ? JSON.parse(userInfoStr) : null;
+    const token = userInfo ? (userInfo.token || userInfo.accessToken) : null;
 
-  const handleDismiss = (id, e) => {
-    e.stopPropagation();
-    if (confirm('Are you sure you want to dismiss this complaint?')) {
-      setComplaints((prev) => prev.filter((c) => c.id !== id));
+    try {
+      if (token) {
+        const res = await fetch(`${import.meta.env.VITE_API_URL}/api/complaints/${id}/status`, {
+          method: 'PUT',
+          headers: {
+            'Content-Type': 'application/json',
+            'Authorization': `Bearer ${token}`
+          },
+          body: JSON.stringify({ status: 'resolved' })
+        });
+        if (!res.ok) throw new Error('Failed to solve on server');
+      }
+      
+      setComplaints((prev) =>
+        prev.map((c) => {
+          if (c.id === id) {
+            return { ...c, status: 'resolved', timeLeft: 0 };
+          }
+          return c;
+        })
+      );
+    } catch (err) {
+      alert(err.message);
     }
   };
 
-  const handleCreateComplaint = (e) => {
+  const handleDismiss = async (id, e) => {
+    e.stopPropagation();
+    if (confirm('Are you sure you want to dismiss this complaint?')) {
+      const userInfoStr = localStorage.getItem('userInfo');
+      const userInfo = userInfoStr ? JSON.parse(userInfoStr) : null;
+      const token = userInfo ? (userInfo.token || userInfo.accessToken) : null;
+
+      try {
+        if (token) {
+          const res = await fetch(`${import.meta.env.VITE_API_URL}/api/complaints/${id}/status`, {
+            method: 'PUT',
+            headers: {
+              'Content-Type': 'application/json',
+              'Authorization': `Bearer ${token}`
+            },
+            body: JSON.stringify({ status: 'dismissed' })
+          });
+          if (!res.ok) throw new Error('Failed to dismiss on server');
+        }
+
+        setComplaints((prev) => prev.filter((c) => c.id !== id));
+      } catch (err) {
+        alert(err.message);
+      }
+    }
+  };
+
+  const handleCreateComplaint = async (e) => {
     e.preventDefault();
     if (!newTitle || !newDesc || !newLocation) {
       alert('Please fill out all required fields.');
       return;
     }
 
-    const randomIdNum = Math.floor(1000 + Math.random() * 9000);
-    const newComplaintObj = {
-      id: `CMP-${randomIdNum}`,
-      title: newTitle,
-      description: newDesc,
-      fullText: newDesc,
-      category: newCategory,
-      status: 'pending',
-      priority: newPriority,
-      location: newLocation,
-      city: 'Hyderabad',
-      phone: newPhone || '+91 99999 88888',
-      date: new Date().toLocaleString('en-US', {
-        month: 'short',
-        day: 'numeric',
-        year: 'numeric',
-        hour: '2-digit',
-        minute: '2-digit',
-        hour12: true,
-      }),
-      timeLeft: newPriority === 'high' ? 3600 : newPriority === 'medium' ? 7200 : 10800,
-      image: newImage 
-        ? URL.createObjectURL(newImage)
-        : newCategory === 'maintenance'
-        ? 'https://lh3.googleusercontent.com/aida-public/AB6AXuBQQuPgfI-AkGxWITm_uh7u7hUpcaHfBsH0DhObiw951cV2yNAFpy1d-NvDS2ntaOAmWbwNt1AJErpiq5uqUv_ObQRMhafPiJYMob4-0Gq2jAHINZcCcLJu_9wFKEqqibDATzJa5hUXJi8wA2PvKBxsEFiV2oBXzMwS__JfkgQLPkvB3rz7FkHA_BAoIC317bg1WMqaKGalG0bCreYY19TUpiIg-GaDsL0ASEDxtVgGQcfPOeZ_UYOo'
-        : 'https://lh3.googleusercontent.com/aida-public/AB6AXuAUXPNo8zPLpX8p-zCn7k6VOODAV7E1RtHB59dYn7KjxjSN4NtpMsb3FehMnYPGHRrTYRj3Nkcbjc-v4SY9-5DrCN2qyzTSUczzUhYMZz5ageU71sd5gRZIw6X8Dq1l-xhhfSKv4UwP1GWhnfP1biPUreddLdf2N49TgXszi_MCdo8vusWoyWIXx1HRVvx2Lmxbexsklx61iTRcPgp57VOS1ZHTrfKoCExyVUBiya17pDrVapyLIs24'
-    };
+    const userInfoStr = localStorage.getItem('userInfo');
+    const userInfo = userInfoStr ? JSON.parse(userInfoStr) : null;
+    const token = userInfo ? (userInfo.token || userInfo.accessToken) : null;
+    
+    if (!token) {
+      alert('You must be logged in to report an issue. Please go back to the home page and sign in.');
+      return;
+    }
 
-    setComplaints([newComplaintObj, ...complaints]);
-    setIsModalOpen(false);
+    let base64Image = null;
+    if (newImage) {
+      try {
+        base64Image = await new Promise((resolve, reject) => {
+          const reader = new FileReader();
+          reader.readAsDataURL(newImage);
+          reader.onload = () => resolve(reader.result);
+          reader.onerror = error => reject(error);
+        });
+      } catch (err) {
+        alert('Failed to process image file. Please try again.');
+        return;
+      }
+    }
 
-    // Reset Form
-    setNewTitle('');
-    setNewDesc('');
-    setNewCategory('harassment');
-    setNewLocation('');
-    setNewPhone('');
-    setNewPriority('medium');
-    setNewImage(null);
+    try {
+      const res = await fetch(`${import.meta.env.VITE_API_URL}/api/complaints`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${token}`
+        },
+        body: JSON.stringify({
+          title: newTitle,
+          description: newDesc,
+          category: newCategory,
+          priority: newPriority,
+          location: newLocation,
+          phone: newPhone,
+          isAnonymous: false,
+          attachments: base64Image ? [base64Image] : []
+        })
+      });
+
+      if (!res.ok) {
+        if (res.status === 401) {
+          localStorage.removeItem('userInfo');
+          alert('Your session has expired. Please sign in again.');
+          if (onNavigate) onNavigate('signin');
+          return;
+        }
+        const errData = await res.json().catch(() => ({}));
+        throw new Error(errData.message || 'Failed to submit complaint. Please try again.');
+      }
+
+      const data = await res.json();
+
+      const newComplaintObj = {
+        id: data._id,
+        title: data.title,
+        description: data.description,
+        fullText: data.description,
+        category: data.category,
+        status: data.status,
+        priority: data.priority || newPriority,
+        location: data.location || newLocation,
+        city: 'Hyderabad',
+        phone: data.phone || newPhone || '+91 99999 88888',
+        date: new Date(data.createdAt).toLocaleString('en-US', {
+          month: 'short',
+          day: 'numeric',
+          year: 'numeric',
+          hour: '2-digit',
+          minute: '2-digit',
+          hour12: true,
+        }),
+        timeLeft: newPriority === 'high' ? 3600 : newPriority === 'medium' ? 7200 : 10800,
+        image: (data.attachments && data.attachments.length > 0)
+          ? data.attachments[0]
+          : 'https://images.unsplash.com/photo-1541339907198-e08756dedf3f?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80'
+      };
+
+      setComplaints([newComplaintObj, ...complaints]);
+      setIsModalOpen(false);
+
+      // Reset Form
+      setNewTitle('');
+      setNewDesc('');
+      setNewCategory('harassment');
+      setNewLocation('');
+      setNewPhone('');
+      setNewPriority('medium');
+      setNewImage(null);
+
+    } catch (err) {
+      alert(err.message);
+    }
   };
 
   // Filter complaints list
@@ -364,7 +467,17 @@ export default function Complaints() {
 
       {/* FAB Floating action button */}
       <button
-        onClick={() => setIsModalOpen(true)}
+        onClick={() => {
+          const userInfoStr = localStorage.getItem('userInfo');
+          const userInfo = userInfoStr ? JSON.parse(userInfoStr) : null;
+          const token = userInfo ? (userInfo.token || userInfo.accessToken) : null;
+          
+          if (!token) {
+            if (onNavigate) onNavigate('signin');
+            return;
+          }
+          setIsModalOpen(true);
+        }}
         className="fixed bottom-xl right-xl z-50 bg-primary text-on-primary px-xl py-md rounded-full shadow-lg hover:shadow-2xl hover:scale-105 active:scale-95 transition-all flex items-center gap-sm font-label-md group cursor-pointer border-none focus:outline-none"
       >
         <span className="material-symbols-outlined group-hover:rotate-12 transition-transform select-none">add_alert</span>

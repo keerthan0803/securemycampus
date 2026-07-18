@@ -118,7 +118,7 @@ export default function Form() {
     // Attempt backend submission if token is present
     if (userInfo?.token) {
       try {
-        const response = await fetch('http://localhost:5000/api/complaints', {
+        const response = await fetch(`${import.meta.env.VITE_API_URL}/api/complaints`, {
           method: 'POST',
           headers: {
             'Content-Type': 'application/json',

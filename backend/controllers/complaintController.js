@@ -4,14 +4,18 @@ const Complaint = require('../models/Complaint');
 // @route   POST /api/complaints
 // @access  Private
 const createComplaint = async (req, res, next) => {
-  const { title, description, category, isAnonymous } = req.body;
+  const { title, description, category, isAnonymous, priority, location, phone, attachments } = req.body;
 
   try {
     const complaint = await Complaint.create({
       title,
       description,
       category,
+      priority: priority || 'medium',
+      location: location || 'Campus',
+      phone: phone || '',
       isAnonymous: isAnonymous || false,
+      attachments: attachments || [],
       user: req.user._id,
     });
 
@@ -27,7 +31,8 @@ const createComplaint = async (req, res, next) => {
 const getHarassmentComplaints = async (req, res, next) => {
   try {
     const complaints = await Complaint.find({ category: 'harassment' })
-      .populate('user', 'name role')
+      .populate('user', 'name email role')
+      .populate('solvedBy', 'name email')
       .sort({ createdAt: -1 });
 
     // Sanitize anonymous complaints
@@ -51,7 +56,8 @@ const getHarassmentComplaints = async (req, res, next) => {
 const getComplaints = async (req, res, next) => {
   try {
     const complaints = await Complaint.find({})
-      .populate('user', 'name role')
+      .populate('user', 'name email role')
+      .populate('solvedBy', 'name email')
       .sort({ createdAt: -1 });
 
     // Sanitize anonymous complaints so user info isn't exposed
@@ -74,7 +80,9 @@ const getComplaints = async (req, res, next) => {
 // @access  Private
 const getComplaintById = async (req, res, next) => {
   try {
-    const complaint = await Complaint.findById(req.params.id).populate('user', 'name role');
+    const complaint = await Complaint.findById(req.params.id)
+      .populate('user', 'name email role')
+      .populate('solvedBy', 'name email');
 
     if (!complaint) {
       res.status(404);
@@ -107,6 +115,15 @@ const updateComplaintStatus = async (req, res, next) => {
     }
 
     complaint.status = status;
+    
+    if (status === 'resolved') {
+      complaint.solvedBy = req.user._id;
+      complaint.solvedDate = Date.now();
+    } else {
+      complaint.solvedBy = undefined;
+      complaint.solvedDate = undefined;
+    }
+
     const updatedComplaint = await complaint.save();
 
     res.json(updatedComplaint);

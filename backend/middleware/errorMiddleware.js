@@ -8,10 +8,9 @@ const errorHandler = (err, req, res, next) => {
   let statusCode = res.statusCode === 200 ? 500 : res.statusCode;
   let message = err.message;
 
-  // Sanitize Mongoose validation errors so passwords/sensitive values aren't leaked in the error message
   if (err.name === 'ValidationError') {
     statusCode = 400;
-    message = 'Validation failed: Please ensure all conditions are met (e.g., password must be at least 6 characters).';
+    message = Object.values(err.errors).map(val => val.message).join(', ');
   }
 
   res.status(statusCode);

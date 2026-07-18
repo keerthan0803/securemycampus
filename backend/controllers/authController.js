@@ -90,12 +90,22 @@ const registerUser = async (req, res, next) => {
       const verifyUrl = `${process.env.FRONTEND_URL || 'http://localhost:5173'}/verify-email/${verificationToken}`;
       
       const message = `Welcome to Secure My Campus! Please verify your email address by clicking the link below:\n\n${verifyUrl}\n\nThis link is valid for 24 hours.`;
+      const html = `
+        <div style="font-family: Arial, sans-serif; padding: 20px;">
+          <h2 style="color: #0d47a1;">Welcome to Secure My Campus!</h2>
+          <p>Please verify your email address by clicking the button below:</p>
+          <a href="${verifyUrl}" style="display: inline-block; padding: 12px 24px; background-color: #0d47a1; color: white; text-decoration: none; border-radius: 6px; font-weight: bold; margin-top: 10px; margin-bottom: 10px;">Verify Email</a>
+          <p style="color: #666; font-size: 14px;">If the button doesn't work, you can copy and paste this link into your browser:<br><br>${verifyUrl}</p>
+          <p style="margin-top: 20px; color: #666; font-size: 14px;">This link is valid for 24 hours.</p>
+        </div>
+      `;
       
       try {
         await sendEmail({
           email: user.email,
           subject: 'Verify your email - Secure My Campus',
           message,
+          html,
         });
 
         res.status(201).json({
@@ -217,12 +227,22 @@ const googleAuth = async (req, res, next) => {
       // Create Verification URL
       const verifyUrl = `${process.env.FRONTEND_URL || 'http://localhost:5173'}/verify-email/${verificationToken}`;
       const message = `Welcome to Secure My Campus! Please verify your email address by clicking the link below:\n\n${verifyUrl}\n\nThis link is valid for 24 hours.`;
+      const html = `
+        <div style="font-family: Arial, sans-serif; padding: 20px;">
+          <h2 style="color: #0d47a1;">Welcome to Secure My Campus!</h2>
+          <p>Please verify your email address by clicking the button below:</p>
+          <a href="${verifyUrl}" style="display: inline-block; padding: 12px 24px; background-color: #0d47a1; color: white; text-decoration: none; border-radius: 6px; font-weight: bold; margin-top: 10px; margin-bottom: 10px;">Verify Email</a>
+          <p style="color: #666; font-size: 14px;">If the button doesn't work, you can copy and paste this link into your browser:<br><br>${verifyUrl}</p>
+          <p style="margin-top: 20px; color: #666; font-size: 14px;">This link is valid for 24 hours.</p>
+        </div>
+      `;
       
       try {
         await sendEmail({
           email: user.email,
           subject: 'Verify your email - Secure My Campus',
           message,
+          html,
         });
 
         return res.status(201).json({

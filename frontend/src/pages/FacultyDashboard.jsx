@@ -7,10 +7,11 @@ export default function FacultyDashboard() {
 
   useEffect(() => {
     const userInfoStr = localStorage.getItem('userInfo');
-    const token = userInfoStr ? JSON.parse(userInfoStr).token : null;
+    const userInfo = userInfoStr ? JSON.parse(userInfoStr) : null;
+    const token = userInfo ? (userInfo.token || userInfo.accessToken) : null;
     
     if (token) {
-      fetch('http://localhost:5000/api/complaints', {
+      fetch(`${import.meta.env.VITE_API_URL}/api/complaints`, {
         headers: {
           'Authorization': `Bearer ${token}`
         }
@@ -18,7 +19,9 @@ export default function FacultyDashboard() {
       .then(res => res.json())
       .then(data => {
          if (Array.isArray(data)) {
-           const mappedCases = data.map(c => ({
+           const mappedCases = data
+             .filter(c => c.status !== 'dismissed')
+             .map(c => ({
              id: c._id,
              studentName: c.user?.name || 'Student (Anonymous)',
              dept: 'N/A',
@@ -26,8 +29,19 @@ export default function FacultyDashboard() {
              category: c.category,
              subject: c.title,
              description: c.description,
+             timeReported: new Date(c.createdAt).toLocaleString('en-US', {
+               month: 'short', day: 'numeric', year: 'numeric',
+               hour: '2-digit', minute: '2-digit', hour12: true
+             }),
+             image: (c.attachments && c.attachments.length > 0)
+               ? c.attachments[0]
+               : 'https://images.unsplash.com/photo-1541339907198-e08756dedf3f?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80',
+             timeSpent: '00:00',
              date: new Date(c.createdAt).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' }),
-             status: c.status === 'pending' ? 'open' : c.status === 'investigating' ? 'in_progress' : 'resolved',
+             status: c.status === 'pending' ? 'open' : (c.status === 'investigating' || c.status === 'reviewed') ? 'in_progress' : 'resolved',
+             studentEmail: c.user?.email || 'Anonymous',
+             solvedByEmail: c.solvedBy?.email || '-',
+             solvedDate: c.solvedDate ? new Date(c.solvedDate).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' }) : '-'
            }));
            setCases(mappedCases);
          }
@@ -64,23 +78,68 @@ export default function FacultyDashboard() {
     link.click();
   };
 
-  const handleStatusChange = (caseId, newStatus) => {
-    setCases(prev => prev.map(c => {
-      if (c.id === caseId) {
-        const updated = { ...c, status: newStatus };
-        if (selectedCase && selectedCase.id === caseId) {
-          setSelectedCase(updated); // Sync modal
-        }
-        return updated;
+  const handleStatusChange = async (caseId, newStatus) => {
+    const userInfoStr = localStorage.getItem('userInfo');
+    const userInfo = userInfoStr ? JSON.parse(userInfoStr) : null;
+    const token = userInfo ? (userInfo.token || userInfo.accessToken) : null;
+    
+    let backendStatus = newStatus;
+    if (newStatus === 'open') backendStatus = 'pending';
+    if (newStatus === 'in_progress') backendStatus = 'reviewed';
+    if (newStatus === 'resolved') backendStatus = 'resolved';
+
+    try {
+      if (token) {
+        const res = await fetch(`${import.meta.env.VITE_API_URL}/api/complaints/${caseId}/status`, {
+          method: 'PUT',
+          headers: {
+            'Content-Type': 'application/json',
+            'Authorization': `Bearer ${token}`
+          },
+          body: JSON.stringify({ status: backendStatus })
+        });
+        if (!res.ok) throw new Error('Failed to update status on server');
       }
-      return c;
-    }));
+
+      setCases(prev => prev.map(c => {
+        if (c.id === caseId) {
+          const updated = { ...c, status: newStatus };
+          if (selectedCase && selectedCase.id === caseId) {
+            setSelectedCase(updated); // Sync modal
+          }
+          return updated;
+        }
+        return c;
+      }));
+    } catch (err) {
+      alert(err.message);
+    }
   };
 
-  const handleDeleteCase = (caseId) => {
+  const handleDeleteCase = async (caseId) => {
     if (confirm(`Are you sure you want to dismiss and archive case #${caseId}?`)) {
-      setCases(prev => prev.filter(c => c.id !== caseId));
-      setSelectedCase(null);
+      const userInfoStr = localStorage.getItem('userInfo');
+      const userInfo = userInfoStr ? JSON.parse(userInfoStr) : null;
+      const token = userInfo ? (userInfo.token || userInfo.accessToken) : null;
+
+      try {
+        if (token) {
+          const res = await fetch(`${import.meta.env.VITE_API_URL}/api/complaints/${caseId}/status`, {
+            method: 'PUT',
+            headers: {
+              'Content-Type': 'application/json',
+              'Authorization': `Bearer ${token}`
+            },
+            body: JSON.stringify({ status: 'dismissed' })
+          });
+          if (!res.ok) throw new Error('Failed to archive on server');
+        }
+
+        setCases(prev => prev.filter(c => c.id !== caseId));
+        setSelectedCase(null);
+      } catch (err) {
+        alert(err.message);
+      }
     }
   };
 
@@ -227,18 +286,25 @@ export default function FacultyDashboard() {
             <table className="w-full text-left border-collapse">
               <thead className="bg-surface-container text-on-surface-variant font-label-md text-label-md border-b border-outline-variant">
                 <tr>
-                  <th className="px-lg py-md">ID</th>
-                  <th className="px-lg py-md">Student</th>
-                  <th className="px-lg py-md">Category</th>
-                  <th className="px-lg py-md">Date</th>
+                  <th className="px-lg py-md">S.No</th>
+                  <th className="px-lg py-md">Complaint Type</th>
+                  <th className="px-lg py-md">Raised By</th>
+                  <th className="px-lg py-md">Raised Date</th>
                   <th className="px-lg py-md">Status</th>
+                  <th className="px-lg py-md">Solved By</th>
+                  <th className="px-lg py-md">Solved Date</th>
                   <th className="px-lg py-md text-right">Action</th>
                 </tr>
               </thead>
               <tbody className="divide-y divide-outline-variant/30">
-                {filteredCases.map((c) => (
+                {filteredCases.map((c, index) => (
                   <tr key={c.id} className="hover:bg-surface-container-low transition-colors group">
-                    <td className="px-lg py-lg font-label-md text-primary font-bold">#{c.id}</td>
+                    <td className="px-lg py-lg font-label-md text-primary font-bold">{index + 1}</td>
+                    <td className="px-lg py-lg">
+                      <span className={`px-sm py-xs rounded-full text-caption font-bold ${getCategoryBadgeClass(c.category)}`}>
+                        {getCategoryLabel(c.category)}
+                      </span>
+                    </td>
                     <td className="px-lg py-lg">
                       <div className="flex items-center gap-md">
                         <div className="w-8 h-8 rounded-full bg-primary/10 flex items-center justify-center font-bold text-primary text-[10px] select-none">
@@ -246,16 +312,11 @@ export default function FacultyDashboard() {
                         </div>
                         <div>
                           <p className="font-label-md text-on-surface">{c.studentName}</p>
-                          <p className="text-caption text-on-surface-variant">{c.dept}</p>
+                          <p className="text-caption text-on-surface-variant truncate max-w-[150px]">{c.studentEmail}</p>
                         </div>
                       </div>
                     </td>
-                    <td className="px-lg py-lg">
-                      <span className={`px-sm py-xs rounded-full text-caption font-bold ${getCategoryBadgeClass(c.category)}`}>
-                        {getCategoryLabel(c.category)}
-                      </span>
-                    </td>
-                    <td className="px-lg py-lg text-on-surface-variant font-body-md">{c.date}</td>
+                    <td className="px-lg py-lg text-on-surface-variant font-body-md whitespace-nowrap">{c.date}</td>
                     <td className="px-lg py-lg">
                       <span className={`flex items-center gap-xs font-label-md ${
                         c.status === 'resolved' 
@@ -274,6 +335,8 @@ export default function FacultyDashboard() {
                         {c.status === 'resolved' ? 'Resolved' : c.status === 'in_progress' ? 'In Progress' : 'Pending Review'}
                       </span>
                     </td>
+                    <td className="px-lg py-lg text-on-surface-variant font-body-md truncate max-w-[150px]">{c.solvedByEmail}</td>
+                    <td className="px-lg py-lg text-on-surface-variant font-body-md whitespace-nowrap">{c.solvedDate}</td>
                     <td className="px-lg py-lg text-right">
                       <button 
                         onClick={() => setSelectedCase(c)}

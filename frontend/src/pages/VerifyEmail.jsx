@@ -19,7 +19,7 @@ export default function VerifyEmail({ onNavigate }) {
     }
 
     // Call the backend verify endpoint
-    fetch(`http://localhost:5000/api/auth/verify/${token}`, {
+    fetch(`${import.meta.env.VITE_API_URL}/api/auth/verify/${token}`, {
       method: 'POST', // or GET depending on backend setup, we used POST in authRoutes
       headers: {
         'Content-Type': 'application/json',

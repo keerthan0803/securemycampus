@@ -15,7 +15,19 @@ const complaintSchema = new mongoose.Schema(
     category: {
       type: String,
       required: [true, 'Please select a category'],
-      enum: ['infrastructure', 'academic', 'hostel', 'security', 'ragging', 'harassment', 'other'],
+      enum: ['infrastructure', 'academic', 'hostel', 'security', 'ragging', 'harassment', 'food', 'maintenance', 'lost_found', 'other'],
+    },
+    priority: {
+      type: String,
+      enum: ['low', 'medium', 'high'],
+      default: 'medium',
+    },
+    location: {
+      type: String,
+      default: 'Campus',
+    },
+    phone: {
+      type: String,
     },
     status: {
       type: String,
@@ -30,6 +42,13 @@ const complaintSchema = new mongoose.Schema(
       type: mongoose.Schema.Types.ObjectId,
       ref: 'User',
       required: true,
+    },
+    solvedBy: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: 'User',
+    },
+    solvedDate: {
+      type: Date,
     },
     upvotes: [
       {

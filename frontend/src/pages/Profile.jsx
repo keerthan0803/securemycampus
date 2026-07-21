@@ -20,7 +20,7 @@ export default function Profile({ onNavigate }) {
   const [phone, setPhone] = useState(userInfo?.phone || '');
   const [location, setLocation] = useState('');
   const studentId = userInfo?.email ? userInfo.email.split('@')[0] : '';
-  
+
   // Profile picture state
   const [profileImage, setProfileImage] = useState('/user.png');
   const fileInputRef = useRef(null);
@@ -82,7 +82,7 @@ export default function Profile({ onNavigate }) {
       showToast('Please enter a valid email address', 'error');
       return;
     }
-    
+
     setName(tempName);
     setEmail(tempEmail);
     setPhone(tempPhone);
@@ -178,10 +178,10 @@ export default function Profile({ onNavigate }) {
 
   return (
     <div className="w-full min-h-screen pb-2xl px-md md:px-gutter max-w-container-max mx-auto relative">
-      
+
       {/* Back Button Section */}
       <div className="mb-lg animate-fade-up">
-        <button 
+        <button
           className="flex items-center gap-xs text-primary font-label-md hover:gap-sm transition-all duration-300 cursor-pointer bg-transparent border-none p-0 focus:outline-none"
           onClick={() => onNavigate('home')}
         >
@@ -191,25 +191,25 @@ export default function Profile({ onNavigate }) {
       </div>
 
       <div className="grid grid-cols-1 lg:grid-cols-12 gap-xl">
-        
+
         {/* Left Column: User Overview */}
         <div className="lg:col-span-4 flex flex-col gap-lg animate-fade-up stagger-1">
           <div className="profile-card bg-surface-container-lowest rounded-xl p-xl flex flex-col items-center text-center border border-outline-variant/30">
             <div className="relative group">
               <div className="w-40 h-40 rounded-full border-4 border-primary/10 overflow-hidden mb-lg relative">
-                <img 
-                  className="w-full h-full object-cover select-none" 
-                  alt="Student Portrait" 
-                  src={profileImage} 
+                <img
+                  className="w-full h-full object-cover select-none"
+                  alt="Student Portrait"
+                  src={profileImage}
                 />
-                <input 
-                  type="file" 
-                  accept="image/*" 
-                  ref={fileInputRef} 
-                  onChange={handleImageUpload} 
-                  className="hidden" 
+                <input
+                  type="file"
+                  accept="image/*"
+                  ref={fileInputRef}
+                  onChange={handleImageUpload}
+                  className="hidden"
                 />
-                <button 
+                <button
                   onClick={() => fileInputRef.current.click()}
                   title="Change Avatar"
                   className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center cursor-pointer border-none w-full h-full text-white focus:outline-none"
@@ -228,7 +228,7 @@ export default function Profile({ onNavigate }) {
 
             <div className="w-full flex flex-col gap-md">
               {!isEditing ? (
-                <button 
+                <button
                   onClick={handleEditClick}
                   className="w-full bg-primary text-on-primary py-md rounded-lg font-label-md flex items-center justify-center gap-sm hover:shadow-lg transition-all active:scale-[0.98] cursor-pointer"
                 >
@@ -237,14 +237,14 @@ export default function Profile({ onNavigate }) {
                 </button>
               ) : (
                 <div className="flex flex-col gap-sm w-full">
-                  <button 
+                  <button
                     onClick={handleSaveProfile}
                     className="w-full bg-green-750 text-white py-md rounded-lg font-label-md flex items-center justify-center gap-sm hover:bg-green-800 transition-all active:scale-[0.98] cursor-pointer"
                   >
                     <span className="material-symbols-outlined text-[20px]">check</span>
                     Save Changes
                   </button>
-                  <button 
+                  <button
                     onClick={handleCancelEdit}
                     className="w-full border border-outline text-on-surface py-md rounded-lg font-label-md flex items-center justify-center gap-sm hover:bg-surface-container transition-all active:scale-[0.98] cursor-pointer"
                   >
@@ -253,8 +253,8 @@ export default function Profile({ onNavigate }) {
                   </button>
                 </div>
               )}
-              
-              <button 
+
+              <button
                 onClick={() => setIsLogoutConfirmOpen(true)}
                 className="w-full border border-error text-error py-md rounded-lg font-label-md flex items-center justify-center gap-sm hover:bg-error/5 transition-all cursor-pointer"
               >
@@ -281,7 +281,7 @@ export default function Profile({ onNavigate }) {
 
         {/* Right Column: Detailed Information */}
         <div className="lg:col-span-8 flex flex-col gap-lg animate-fade-up stagger-2">
-          
+
           {/* Information Bento Section */}
           <div className="profile-card bg-surface-container-lowest rounded-xl p-xl border border-outline-variant/30">
             <div className="flex items-center justify-between mb-xl">
@@ -290,7 +290,7 @@ export default function Profile({ onNavigate }) {
               </h2>
               <span className="material-symbols-outlined text-primary/40 select-none">person_outline</span>
             </div>
-            
+
             <div className="grid grid-cols-1 md:grid-cols-2 gap-xl">
               {/* Full Name */}
               <div className="space-y-xs">
@@ -298,8 +298,8 @@ export default function Profile({ onNavigate }) {
                   <span className="material-symbols-outlined text-[18px]">person</span> Full Name
                 </label>
                 {isEditing ? (
-                  <input 
-                    type="text" 
+                  <input
+                    type="text"
                     value={tempName}
                     onChange={(e) => setTempName(e.target.value)}
                     className="w-full bg-surface border border-outline-variant/50 rounded-lg px-md py-xs font-body-lg text-on-surface focus:outline-none focus:border-primary transition-all"
@@ -317,8 +317,8 @@ export default function Profile({ onNavigate }) {
                   <span className="material-symbols-outlined text-[18px]">mail</span> Email Address
                 </label>
                 {isEditing ? (
-                  <input 
-                    type="email" 
+                  <input
+                    type="email"
                     value={tempEmail}
                     onChange={(e) => setTempEmail(e.target.value)}
                     className="w-full bg-surface border border-outline-variant/50 rounded-lg px-md py-xs font-body-lg text-on-surface focus:outline-none focus:border-primary transition-all"
@@ -336,8 +336,8 @@ export default function Profile({ onNavigate }) {
                   <span className="material-symbols-outlined text-[18px]">phone</span> Phone Number
                 </label>
                 {isEditing ? (
-                  <input 
-                    type="text" 
+                  <input
+                    type="text"
                     value={tempPhone}
                     onChange={(e) => setTempPhone(e.target.value)}
                     className="w-full bg-surface border border-outline-variant/50 rounded-lg px-md py-xs font-body-lg text-on-surface focus:outline-none focus:border-primary transition-all"
@@ -355,8 +355,8 @@ export default function Profile({ onNavigate }) {
                   <span className="material-symbols-outlined text-[18px]">location_on</span> Campus Location
                 </label>
                 {isEditing ? (
-                  <input 
-                    type="text" 
+                  <input
+                    type="text"
                     value={tempLocation}
                     onChange={(e) => setTempLocation(e.target.value)}
                     className="w-full bg-surface border border-outline-variant/50 rounded-lg px-md py-xs font-body-lg text-on-surface focus:outline-none focus:border-primary transition-all"
@@ -378,7 +378,7 @@ export default function Profile({ onNavigate }) {
               </h2>
               <span className="material-symbols-outlined text-primary/40 select-none">lock</span>
             </div>
-            
+
             <div className="grid grid-cols-1 md:grid-cols-2 gap-xl items-end">
               <div className="space-y-xs">
                 <label className="font-label-md text-on-surface-variant flex items-center gap-xs select-none">
@@ -388,7 +388,7 @@ export default function Profile({ onNavigate }) {
                   <p className="font-body-lg text-body-lg text-on-surface tracking-widest select-none">
                     ••••••••••••
                   </p>
-                  <button 
+                  <button
                     onClick={() => setIsPasswordModalOpen(true)}
                     className="text-primary font-label-md hover:underline cursor-pointer bg-transparent border-none p-0 focus:outline-none"
                   >
@@ -396,11 +396,11 @@ export default function Profile({ onNavigate }) {
                   </button>
                 </div>
               </div>
-              
+
               <div className="p-md bg-surface-container rounded-lg flex items-center gap-md">
                 <span className="material-symbols-outlined text-primary select-none">security</span>
                 <p className="font-caption text-on-surface-variant leading-tight select-none">
-                  {lastPasswordChangeDays === 0 
+                  {lastPasswordChangeDays === 0
                     ? "Password updated just now. We recommend keeping it secure and updated."
                     : `Last changed ${lastPasswordChangeDays} days ago. We recommend updating your password every 90 days for campus security.`}
                 </p>
@@ -417,7 +417,7 @@ export default function Profile({ onNavigate }) {
                   Ensure your emergency contact information is up to date for immediate campus assistance.
                 </p>
               </div>
-              <button 
+              <button
                 onClick={handleOpenContacts}
                 className="whitespace-nowrap bg-white text-primary px-xl py-md rounded-lg font-label-md hover:bg-secondary-fixed hover:shadow-lg transition-all active:scale-[0.98] cursor-pointer border-none"
               >
@@ -438,7 +438,7 @@ export default function Profile({ onNavigate }) {
           <div className="bg-surface-container-lowest rounded-xl border border-outline-variant/30 p-xl w-full max-w-[480px] shadow-2xl animate-fade-up">
             <div className="flex justify-between items-center mb-lg">
               <h3 className="font-headline-md text-headline-md text-on-surface">Change Password</h3>
-              <button 
+              <button
                 onClick={() => setIsPasswordModalOpen(false)}
                 className="text-on-surface-variant hover:text-on-surface bg-transparent border-none p-1 rounded-full cursor-pointer hover:bg-surface-container-high transition-colors"
               >
@@ -449,7 +449,7 @@ export default function Profile({ onNavigate }) {
             <form onSubmit={handlePasswordSubmit} className="flex flex-col gap-md">
               <div className="flex flex-col gap-xs">
                 <label className="font-label-md text-on-surface-variant">Current Password</label>
-                <input 
+                <input
                   type="password"
                   value={currentPassword}
                   onChange={(e) => setCurrentPassword(e.target.value)}
@@ -461,7 +461,7 @@ export default function Profile({ onNavigate }) {
 
               <div className="flex flex-col gap-xs">
                 <label className="font-label-md text-on-surface-variant">New Password</label>
-                <input 
+                <input
                   type="password"
                   value={newPassword}
                   onChange={(e) => setNewPassword(e.target.value)}
@@ -473,7 +473,7 @@ export default function Profile({ onNavigate }) {
 
               <div className="flex flex-col gap-xs">
                 <label className="font-label-md text-on-surface-variant">Confirm New Password</label>
-                <input 
+                <input
                   type="password"
                   value={confirmPassword}
                   onChange={(e) => setConfirmPassword(e.target.value)}
@@ -491,14 +491,14 @@ export default function Profile({ onNavigate }) {
               )}
 
               <div className="flex gap-sm justify-end mt-md">
-                <button 
+                <button
                   type="button"
                   onClick={() => setIsPasswordModalOpen(false)}
                   className="px-lg py-md border border-outline text-on-surface rounded-lg font-label-md hover:bg-surface-container transition-all cursor-pointer"
                 >
                   Cancel
                 </button>
-                <button 
+                <button
                   type="submit"
                   className="px-lg py-md bg-primary text-on-primary rounded-lg font-label-md hover:bg-primary-container transition-all active:scale-[0.98] cursor-pointer"
                 >
@@ -516,7 +516,7 @@ export default function Profile({ onNavigate }) {
           <div className="bg-surface-container-lowest rounded-xl border border-outline-variant/30 p-xl w-full max-w-[500px] shadow-2xl animate-fade-up">
             <div className="flex justify-between items-center mb-lg">
               <h3 className="font-headline-md text-headline-md text-on-surface">Manage Emergency Contacts</h3>
-              <button 
+              <button
                 onClick={() => setIsContactsModalOpen(false)}
                 className="text-on-surface-variant hover:text-on-surface bg-transparent border-none p-1 rounded-full cursor-pointer hover:bg-surface-container-high transition-colors"
               >
@@ -530,11 +530,11 @@ export default function Profile({ onNavigate }) {
                   <h4 className="font-label-md text-primary uppercase tracking-wider">
                     Contact #{index + 1}
                   </h4>
-                  
+
                   <div className="grid grid-cols-2 gap-sm">
                     <div className="flex flex-col gap-xs">
                       <label className="font-caption text-on-surface-variant">Name</label>
-                      <input 
+                      <input
                         type="text"
                         value={contact.name}
                         onChange={(e) => handleContactChange(index, 'name', e.target.value)}
@@ -544,7 +544,7 @@ export default function Profile({ onNavigate }) {
                     </div>
                     <div className="flex flex-col gap-xs">
                       <label className="font-caption text-on-surface-variant">Relationship</label>
-                      <input 
+                      <input
                         type="text"
                         value={contact.relationship}
                         onChange={(e) => handleContactChange(index, 'relationship', e.target.value)}
@@ -556,7 +556,7 @@ export default function Profile({ onNavigate }) {
 
                   <div className="flex flex-col gap-xs">
                     <label className="font-caption text-on-surface-variant">Phone Number</label>
-                    <input 
+                    <input
                       type="text"
                       value={contact.phone}
                       onChange={(e) => handleContactChange(index, 'phone', e.target.value)}
@@ -568,14 +568,14 @@ export default function Profile({ onNavigate }) {
               ))}
 
               <div className="flex gap-sm justify-end mt-md">
-                <button 
+                <button
                   type="button"
                   onClick={() => setIsContactsModalOpen(false)}
                   className="px-lg py-md border border-outline text-on-surface rounded-lg font-label-md hover:bg-surface-container transition-all cursor-pointer"
                 >
                   Cancel
                 </button>
-                <button 
+                <button
                   type="submit"
                   className="px-lg py-md bg-primary text-on-primary rounded-lg font-label-md hover:bg-primary-container transition-all active:scale-[0.98] cursor-pointer"
                 >
@@ -600,13 +600,13 @@ export default function Profile({ onNavigate }) {
             </p>
 
             <div className="flex gap-sm justify-center">
-              <button 
+              <button
                 onClick={() => setIsLogoutConfirmOpen(false)}
                 className="px-lg py-md border border-outline text-on-surface rounded-lg font-label-md hover:bg-surface-container transition-all cursor-pointer"
               >
                 Cancel
               </button>
-              <button 
+              <button
                 onClick={handleLogout}
                 className="px-lg py-md bg-error text-white rounded-lg font-label-md hover:bg-red-700 transition-all active:scale-[0.98] cursor-pointer border-none"
               >
@@ -620,7 +620,9 @@ export default function Profile({ onNavigate }) {
       {/* FLOATING TOAST NOTIFICATION */}
       {toast && (
         <div className="fixed bottom-lg right-lg z-[200] flex items-center gap-sm bg-inverse-surface text-inverse-on-surface px-lg py-md rounded-xl shadow-2xl border border-outline-variant/20 animate-fade-in">
-          <span className={`material-symbols-outlined ${toast.type === 'error' ? 'text-error' : toast.type === 'info' ? 'text-secondary' : 'text-green-500'} select-none`}>
+          <span className={`material-symbols-outlined ${
+            toast.type === 'error' ? 'text-error' : toast.type === 'info' ? 'text-secondary' : 'text-tertiary'
+          } select-none`}>
             {toast.type === 'error' ? 'error' : toast.type === 'info' ? 'info' : 'check_circle'}
           </span>
           <span className="font-label-md">{toast.message}</span>

@@ -4,7 +4,7 @@ import Card from '../../components/ui/Card';
 export default function Form() {
   // Check if user is logged in
   const userInfo = JSON.parse(localStorage.getItem('userInfo') || 'null');
-  
+
   // Pre-fill name and phone if available from logged-in user info
   const [formData, setFormData] = useState({
     name: userInfo?.name || '',
@@ -47,7 +47,7 @@ export default function Form() {
         alert(`File "${file.name}" is too large. Max size is 10MB.`);
         continue;
       }
-      
+
       const isImage = file.type.startsWith('image/');
       const isPdf = file.type === 'application/pdf';
       if (!isImage && !isPdf) {
@@ -102,8 +102,8 @@ export default function Form() {
 
     // Auto-generate title
     const formattedLocation = formData.location ? ` at ${formData.location}` : '';
-    const categoryLabel = formData.category 
-      ? formData.category.charAt(0).toUpperCase() + formData.category.slice(1) 
+    const categoryLabel = formData.category
+      ? formData.category.charAt(0).toUpperCase() + formData.category.slice(1)
       : 'General';
     const autoTitle = `${categoryLabel} Incident${formattedLocation}`;
 
@@ -313,11 +313,10 @@ export default function Form() {
                 Upload Evidence (Photos/Documents)
               </label>
               <div
-                className={`file-drop-area border-2 border-dashed rounded-xl p-xl flex flex-col items-center justify-center gap-sm cursor-pointer transition-all ${
-                  dragOver
+                className={`file-drop-area border-2 border-dashed rounded-xl p-xl flex flex-col items-center justify-center gap-sm cursor-pointer transition-all ${dragOver
                     ? 'border-primary bg-primary/5'
                     : 'border-outline-variant bg-surface-container-low hover:bg-surface-container'
-                }`}
+                  }`}
                 onDragOver={handleDragOver}
                 onDragLeave={handleDragLeave}
                 onDrop={handleDrop}
@@ -377,11 +376,10 @@ export default function Form() {
               <button
                 type="submit"
                 disabled={isSubmitting || submitSuccess}
-                className={`w-full text-on-primary font-label-md text-lg py-md rounded-lg shadow-lg active:scale-[0.98] transition-all duration-150 flex items-center justify-center gap-sm cursor-pointer ${
-                  submitSuccess
+                className={`w-full text-on-primary font-label-md text-lg py-md rounded-lg shadow-lg active:scale-[0.98] transition-all duration-150 flex items-center justify-center gap-sm cursor-pointer ${submitSuccess
                     ? 'bg-green-600 hover:bg-green-700'
                     : 'bg-primary hover:bg-primary-container'
-                } ${isSubmitting ? 'opacity-85 cursor-not-allowed' : ''}`}
+                  } ${isSubmitting ? 'opacity-85 cursor-not-allowed' : ''}`}
               >
                 {isSubmitting ? (
                   <>

@@ -23,50 +23,50 @@ export default function Complaints({ onNavigate }) {
     const userInfoStr = localStorage.getItem('userInfo');
     const userInfo = userInfoStr ? JSON.parse(userInfoStr) : null;
     const token = userInfo ? (userInfo.token || userInfo.accessToken) : null;
-    
+
     if (token) {
       fetch(`${import.meta.env.VITE_API_URL}/api/complaints`, {
         headers: {
           'Authorization': `Bearer ${token}`
         }
       })
-      .then(res => res.json())
-      .then(data => {
-         if (Array.isArray(data)) {
-           const mappedComplaints = data
-             .filter(c => c.status !== 'dismissed')
-             .map(c => ({
-             id: c._id,
-             title: c.title,
-             description: c.description,
-             fullText: c.description,
-             category: c.category,
-             status: c.status,
-             priority: c.priority || 'medium',
-             location: c.location || 'Campus',
-             city: 'Hyderabad',
-             phone: c.phone || 'N/A',
-             date: new Date(c.createdAt).toLocaleString('en-US', {
-                month: 'short',
-                day: 'numeric',
-                year: 'numeric',
-                hour: '2-digit',
-                minute: '2-digit',
-                hour12: true,
-             }),
-             timeLeft: 7200,
-             image: (c.attachments && c.attachments.length > 0) 
-               ? c.attachments[0] 
-               : 'https://images.unsplash.com/photo-1541339907198-e08756dedf3f?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80'
-           }));
-           setComplaints(mappedComplaints);
-         }
-         setIsLoading(false);
-      })
-      .catch((err) => {
-        console.error(err);
-        setIsLoading(false);
-      });
+        .then(res => res.json())
+        .then(data => {
+          if (Array.isArray(data)) {
+            const mappedComplaints = data
+              .filter(c => c.status !== 'dismissed')
+              .map(c => ({
+                id: c._id,
+                title: c.title,
+                description: c.description,
+                fullText: c.description,
+                category: c.category,
+                status: c.status,
+                priority: c.priority || 'medium',
+                location: c.location || 'Campus',
+                city: 'Hyderabad',
+                phone: c.phone || 'N/A',
+                date: new Date(c.createdAt).toLocaleString('en-US', {
+                  month: 'short',
+                  day: 'numeric',
+                  year: 'numeric',
+                  hour: '2-digit',
+                  minute: '2-digit',
+                  hour12: true,
+                }),
+                timeLeft: 7200,
+                image: (c.attachments && c.attachments.length > 0)
+                  ? c.attachments[0]
+                  : 'https://images.unsplash.com/photo-1541339907198-e08756dedf3f?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80'
+              }));
+            setComplaints(mappedComplaints);
+          }
+          setIsLoading(false);
+        })
+        .catch((err) => {
+          console.error(err);
+          setIsLoading(false);
+        });
     } else {
       setIsLoading(false);
     }
@@ -103,7 +103,7 @@ export default function Complaints({ onNavigate }) {
 
   const handleSolve = async (id, e) => {
     e.stopPropagation();
-    
+
     const userInfoStr = localStorage.getItem('userInfo');
     const userInfo = userInfoStr ? JSON.parse(userInfoStr) : null;
     const token = userInfo ? (userInfo.token || userInfo.accessToken) : null;
@@ -120,7 +120,7 @@ export default function Complaints({ onNavigate }) {
         });
         if (!res.ok) throw new Error('Failed to solve on server');
       }
-      
+
       setComplaints((prev) =>
         prev.map((c) => {
           if (c.id === id) {
@@ -171,7 +171,7 @@ export default function Complaints({ onNavigate }) {
     const userInfoStr = localStorage.getItem('userInfo');
     const userInfo = userInfoStr ? JSON.parse(userInfoStr) : null;
     const token = userInfo ? (userInfo.token || userInfo.accessToken) : null;
-    
+
     if (!token) {
       alert('You must be logged in to report an issue. Please go back to the home page and sign in.');
       return;
@@ -363,12 +363,12 @@ export default function Complaints({ onNavigate }) {
                           alt={c.title}
                         />
                         <div className={`absolute top-md right-md px-sm py-xs rounded-full font-label-md text-[10px] uppercase tracking-wider text-white ${c.status === 'resolved'
-                            ? 'bg-primary'
-                            : c.priority === 'high'
-                              ? 'bg-error'
-                              : c.priority === 'medium'
-                                ? 'bg-secondary'
-                                : 'bg-outline'
+                          ? 'bg-primary'
+                          : c.priority === 'high'
+                            ? 'bg-error'
+                            : c.priority === 'medium'
+                              ? 'bg-secondary'
+                              : 'bg-outline'
                           }`}>
                           {c.status === 'resolved' ? 'Resolved' : c.status === 'investigating' ? 'In Progress' : `${c.priority} Priority`}
                         </div>
@@ -471,7 +471,7 @@ export default function Complaints({ onNavigate }) {
           const userInfoStr = localStorage.getItem('userInfo');
           const userInfo = userInfoStr ? JSON.parse(userInfoStr) : null;
           const token = userInfo ? (userInfo.token || userInfo.accessToken) : null;
-          
+
           if (!token) {
             if (onNavigate) onNavigate('signin');
             return;

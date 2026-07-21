@@ -9,55 +9,55 @@ export default function FacultyDashboard() {
     const userInfoStr = localStorage.getItem('userInfo');
     const userInfo = userInfoStr ? JSON.parse(userInfoStr) : null;
     const token = userInfo ? (userInfo.token || userInfo.accessToken) : null;
-    
+
     if (token) {
       fetch(`${import.meta.env.VITE_API_URL}/api/complaints`, {
         headers: {
           'Authorization': `Bearer ${token}`
         }
       })
-      .then(res => res.json())
-      .then(data => {
-         if (Array.isArray(data)) {
-           const mappedCases = data
-             .filter(c => c.status !== 'dismissed')
-             .map(c => ({
-             id: c._id,
-             studentName: c.user?.name || 'Student (Anonymous)',
-             dept: 'N/A',
-             avatarInitials: (c.user?.name || 'S')[0].toUpperCase(),
-             category: c.category,
-             subject: c.title,
-             description: c.description,
-             timeReported: new Date(c.createdAt).toLocaleString('en-US', {
-               month: 'short', day: 'numeric', year: 'numeric',
-               hour: '2-digit', minute: '2-digit', hour12: true
-             }),
-             image: (c.attachments && c.attachments.length > 0)
-               ? c.attachments[0]
-               : 'https://images.unsplash.com/photo-1541339907198-e08756dedf3f?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80',
-             timeSpent: '00:00',
-             date: new Date(c.createdAt).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' }),
-             status: c.status === 'pending' ? 'open' : (c.status === 'investigating' || c.status === 'reviewed') ? 'in_progress' : 'resolved',
-             studentEmail: c.user?.email || 'Anonymous',
-             solvedByEmail: c.solvedBy?.email || '-',
-             solvedDate: c.solvedDate ? new Date(c.solvedDate).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' }) : '-'
-           }));
-           setCases(mappedCases);
-         }
-         setIsLoading(false);
-      })
-      .catch((err) => {
-        console.error(err);
-        setIsLoading(false);
-      });
+        .then(res => res.json())
+        .then(data => {
+          if (Array.isArray(data)) {
+            const mappedCases = data
+              .filter(c => c.status !== 'dismissed')
+              .map(c => ({
+                id: c._id,
+                studentName: c.user?.name || 'Student (Anonymous)',
+                dept: 'N/A',
+                avatarInitials: (c.user?.name || 'S')[0].toUpperCase(),
+                category: c.category,
+                subject: c.title,
+                description: c.description,
+                timeReported: new Date(c.createdAt).toLocaleString('en-US', {
+                  month: 'short', day: 'numeric', year: 'numeric',
+                  hour: '2-digit', minute: '2-digit', hour12: true
+                }),
+                image: (c.attachments && c.attachments.length > 0)
+                  ? c.attachments[0]
+                  : 'https://images.unsplash.com/photo-1541339907198-e08756dedf3f?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80',
+                timeSpent: '00:00',
+                date: new Date(c.createdAt).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' }),
+                status: c.status === 'pending' ? 'open' : (c.status === 'investigating' || c.status === 'reviewed') ? 'in_progress' : 'resolved',
+                studentEmail: c.user?.email || 'Anonymous',
+                solvedByEmail: c.solvedBy?.email || '-',
+                solvedDate: c.solvedDate ? new Date(c.solvedDate).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' }) : '-'
+              }));
+            setCases(mappedCases);
+          }
+          setIsLoading(false);
+        })
+        .catch((err) => {
+          console.error(err);
+          setIsLoading(false);
+        });
     } else {
       setIsLoading(false);
     }
   }, []);
   const [categoryFilter, setCategoryFilter] = useState('');
   const [statusFilter, setStatusFilter] = useState('');
-  
+
   // Modal states
   const [selectedCase, setSelectedCase] = useState(null);
 
@@ -82,7 +82,7 @@ export default function FacultyDashboard() {
     const userInfoStr = localStorage.getItem('userInfo');
     const userInfo = userInfoStr ? JSON.parse(userInfoStr) : null;
     const token = userInfo ? (userInfo.token || userInfo.accessToken) : null;
-    
+
     let backendStatus = newStatus;
     if (newStatus === 'open') backendStatus = 'pending';
     if (newStatus === 'in_progress') backendStatus = 'reviewed';
@@ -145,7 +145,7 @@ export default function FacultyDashboard() {
 
   // Filters logic
   const filteredCases = cases.filter(c => {
-    const matchesSearch = 
+    const matchesSearch =
       c.studentName.toLowerCase().includes(search.toLowerCase()) ||
       c.id.toLowerCase().includes(search.toLowerCase()) ||
       c.subject.toLowerCase().includes(search.toLowerCase());
@@ -195,7 +195,7 @@ export default function FacultyDashboard() {
               <h3 className="text-headline-md font-headline-md text-primary">{totalCount}</h3>
             </div>
           </div>
-          
+
           {/* Pending Cases */}
           <div className="bg-surface-container-lowest p-lg rounded-xl shadow-sm border border-outline-variant flex items-center gap-lg select-none">
             <div className="w-12 h-12 rounded-lg bg-tertiary-fixed flex items-center justify-center text-tertiary-container">
@@ -255,8 +255,8 @@ export default function FacultyDashboard() {
               <option value="resolved">Resolved</option>
             </select>
           </div>
-          
-          <button 
+
+          <button
             onClick={handleExport}
             className="w-full md:w-auto bg-primary text-white font-label-md text-label-md px-lg py-sm rounded-lg hover:bg-primary-container transition-all flex items-center justify-center gap-sm active:scale-95 shadow-md cursor-pointer border-none"
           >
@@ -280,122 +280,119 @@ export default function FacultyDashboard() {
           </div>
         ) : (
           <>
-          {/* Desktop View: Table */}
-          <div className="hidden md:block bg-surface-container-lowest rounded-xl shadow-lg border border-outline-variant overflow-hidden w-full">
-          <div className="overflow-x-auto custom-scrollbar">
-            <table className="w-full text-left border-collapse">
-              <thead className="bg-surface-container text-on-surface-variant font-label-md text-label-md border-b border-outline-variant">
-                <tr>
-                  <th className="px-lg py-md">S.No</th>
-                  <th className="px-lg py-md">Complaint Type</th>
-                  <th className="px-lg py-md">Raised By</th>
-                  <th className="px-lg py-md">Raised Date</th>
-                  <th className="px-lg py-md">Status</th>
-                  <th className="px-lg py-md">Solved By</th>
-                  <th className="px-lg py-md">Solved Date</th>
-                  <th className="px-lg py-md text-right">Action</th>
-                </tr>
-              </thead>
-              <tbody className="divide-y divide-outline-variant/30">
-                {filteredCases.map((c, index) => (
-                  <tr key={c.id} className="hover:bg-surface-container-low transition-colors group">
-                    <td className="px-lg py-lg font-label-md text-primary font-bold">{index + 1}</td>
-                    <td className="px-lg py-lg">
-                      <span className={`px-sm py-xs rounded-full text-caption font-bold ${getCategoryBadgeClass(c.category)}`}>
-                        {getCategoryLabel(c.category)}
-                      </span>
-                    </td>
-                    <td className="px-lg py-lg">
-                      <div className="flex items-center gap-md">
-                        <div className="w-8 h-8 rounded-full bg-primary/10 flex items-center justify-center font-bold text-primary text-[10px] select-none">
-                          {c.avatarInitials}
-                        </div>
-                        <div>
-                          <p className="font-label-md text-on-surface">{c.studentName}</p>
-                          <p className="text-caption text-on-surface-variant truncate max-w-[150px]">{c.studentEmail}</p>
-                        </div>
-                      </div>
-                    </td>
-                    <td className="px-lg py-lg text-on-surface-variant font-body-md whitespace-nowrap">{c.date}</td>
-                    <td className="px-lg py-lg">
-                      <span className={`flex items-center gap-xs font-label-md ${
-                        c.status === 'resolved' 
-                          ? 'text-secondary' 
-                          : c.status === 'in_progress' 
-                          ? 'text-primary' 
-                          : 'text-tertiary-container'
-                      }`}>
-                        <span className={`w-2 h-2 rounded-full ${
-                          c.status === 'resolved' 
-                            ? 'bg-secondary' 
-                            : c.status === 'in_progress' 
-                            ? 'bg-primary' 
-                            : 'bg-tertiary-container'
-                        }`} />
-                        {c.status === 'resolved' ? 'Resolved' : c.status === 'in_progress' ? 'In Progress' : 'Pending Review'}
-                      </span>
-                    </td>
-                    <td className="px-lg py-lg text-on-surface-variant font-body-md truncate max-w-[150px]">{c.solvedByEmail}</td>
-                    <td className="px-lg py-lg text-on-surface-variant font-body-md whitespace-nowrap">{c.solvedDate}</td>
-                    <td className="px-lg py-lg text-right">
-                      <button 
-                        onClick={() => setSelectedCase(c)}
-                        className="p-xs text-primary hover:bg-primary-fixed rounded-full transition-all cursor-pointer border-none bg-transparent"
-                      >
-                        <span className="material-symbols-outlined select-none">visibility</span>
-                      </button>
-                    </td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
-          </div>
-        </div>
-
-        {/* Mobile View: Cards */}
-        <div className="md:hidden space-y-md w-full">
-          {filteredCases.map((c) => (
-            <div 
-              key={c.id} 
-              className="bg-surface-container-lowest p-lg rounded-xl border border-outline-variant card-hover-effect flex flex-col"
-            >
-              <div className="flex justify-between items-start mb-md">
-                <div>
-                  <span className="text-primary font-label-md font-bold">#{c.id}</span>
-                  <h4 className="font-headline-md text-[18px] text-on-surface">{c.studentName}</h4>
-                </div>
-                <span className={`px-sm py-xs rounded-full text-caption font-bold ${getCategoryBadgeClass(c.category)}`}>
-                  {c.category.toUpperCase().slice(0, 8)}
-                </span>
+            {/* Desktop View: Table */}
+            <div className="hidden md:block bg-surface-container-lowest rounded-xl shadow-lg border border-outline-variant overflow-hidden w-full">
+              <div className="overflow-x-auto custom-scrollbar">
+                <table className="w-full text-left border-collapse">
+                  <thead className="bg-surface-container text-on-surface-variant font-label-md text-label-md border-b border-outline-variant">
+                    <tr>
+                      <th className="px-lg py-md">S.No</th>
+                      <th className="px-lg py-md">Complaint Type</th>
+                      <th className="px-lg py-md">Raised By</th>
+                      <th className="px-lg py-md">Raised Date</th>
+                      <th className="px-lg py-md">Status</th>
+                      <th className="px-lg py-md">Solved By</th>
+                      <th className="px-lg py-md">Solved Date</th>
+                      <th className="px-lg py-md text-right">Action</th>
+                    </tr>
+                  </thead>
+                  <tbody className="divide-y divide-outline-variant/30">
+                    {filteredCases.map((c, index) => (
+                      <tr key={c.id} className="hover:bg-surface-container-low transition-colors group">
+                        <td className="px-lg py-lg font-label-md text-primary font-bold">{index + 1}</td>
+                        <td className="px-lg py-lg">
+                          <span className={`px-sm py-xs rounded-full text-caption font-bold ${getCategoryBadgeClass(c.category)}`}>
+                            {getCategoryLabel(c.category)}
+                          </span>
+                        </td>
+                        <td className="px-lg py-lg">
+                          <div className="flex items-center gap-md">
+                            <div className="w-8 h-8 rounded-full bg-primary/10 flex items-center justify-center font-bold text-primary text-[10px] select-none">
+                              {c.avatarInitials}
+                            </div>
+                            <div>
+                              <p className="font-label-md text-on-surface">{c.studentName}</p>
+                              <p className="text-caption text-on-surface-variant truncate max-w-[150px]">{c.studentEmail}</p>
+                            </div>
+                          </div>
+                        </td>
+                        <td className="px-lg py-lg text-on-surface-variant font-body-md whitespace-nowrap">{c.date}</td>
+                        <td className="px-lg py-lg">
+                          <span className={`flex items-center gap-xs font-label-md ${c.status === 'resolved'
+                              ? 'text-secondary'
+                              : c.status === 'in_progress'
+                                ? 'text-primary'
+                                : 'text-tertiary-container'
+                            }`}>
+                            <span className={`w-2 h-2 rounded-full ${c.status === 'resolved'
+                                ? 'bg-secondary'
+                                : c.status === 'in_progress'
+                                  ? 'bg-primary'
+                                  : 'bg-tertiary-container'
+                              }`} />
+                            {c.status === 'resolved' ? 'Resolved' : c.status === 'in_progress' ? 'In Progress' : 'Pending Review'}
+                          </span>
+                        </td>
+                        <td className="px-lg py-lg text-on-surface-variant font-body-md truncate max-w-[150px]">{c.solvedByEmail}</td>
+                        <td className="px-lg py-lg text-on-surface-variant font-body-md whitespace-nowrap">{c.solvedDate}</td>
+                        <td className="px-lg py-lg text-right">
+                          <button
+                            onClick={() => setSelectedCase(c)}
+                            className="p-xs text-primary hover:bg-primary-fixed rounded-full transition-all cursor-pointer border-none bg-transparent"
+                          >
+                            <span className="material-symbols-outlined select-none">visibility</span>
+                          </button>
+                        </td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
               </div>
-              <div className="grid grid-cols-2 gap-md mb-lg">
-                <div>
-                  <p className="text-caption text-on-surface-variant mb-1">Status</p>
-                  <p className={`text-label-md font-bold ${
-                    c.status === 'resolved' 
-                      ? 'text-secondary' 
-                      : c.status === 'in_progress' 
-                      ? 'text-primary' 
-                      : 'text-tertiary-container'
-                  }`}>
-                    {c.status === 'resolved' ? 'Resolved' : c.status === 'in_progress' ? 'In Progress' : 'Pending Review'}
-                  </p>
-                </div>
-                <div>
-                  <p className="text-caption text-on-surface-variant mb-1">Date</p>
-                  <p className="text-label-md font-bold text-on-surface">{c.date}</p>
-                </div>
-              </div>
-              <button 
-                onClick={() => setSelectedCase(c)}
-                className="w-full py-sm bg-primary-fixed text-primary font-label-md rounded-lg active:scale-95 transition-transform cursor-pointer border-none"
-              >
-                View Details
-              </button>
             </div>
-          ))}
-        </div>
-        </>
+
+            {/* Mobile View: Cards */}
+            <div className="md:hidden space-y-md w-full">
+              {filteredCases.map((c) => (
+                <div
+                  key={c.id}
+                  className="bg-surface-container-lowest p-lg rounded-xl border border-outline-variant card-hover-effect flex flex-col"
+                >
+                  <div className="flex justify-between items-start mb-md">
+                    <div>
+                      <span className="text-primary font-label-md font-bold">#{c.id}</span>
+                      <h4 className="font-headline-md text-[18px] text-on-surface">{c.studentName}</h4>
+                    </div>
+                    <span className={`px-sm py-xs rounded-full text-caption font-bold ${getCategoryBadgeClass(c.category)}`}>
+                      {c.category.toUpperCase().slice(0, 8)}
+                    </span>
+                  </div>
+                  <div className="grid grid-cols-2 gap-md mb-lg">
+                    <div>
+                      <p className="text-caption text-on-surface-variant mb-1">Status</p>
+                      <p className={`text-label-md font-bold ${c.status === 'resolved'
+                          ? 'text-secondary'
+                          : c.status === 'in_progress'
+                            ? 'text-primary'
+                            : 'text-tertiary-container'
+                        }`}>
+                        {c.status === 'resolved' ? 'Resolved' : c.status === 'in_progress' ? 'In Progress' : 'Pending Review'}
+                      </p>
+                    </div>
+                    <div>
+                      <p className="text-caption text-on-surface-variant mb-1">Date</p>
+                      <p className="text-label-md font-bold text-on-surface">{c.date}</p>
+                    </div>
+                  </div>
+                  <button
+                    onClick={() => setSelectedCase(c)}
+                    className="w-full py-sm bg-primary-fixed text-primary font-label-md rounded-lg active:scale-95 transition-transform cursor-pointer border-none"
+                  >
+                    View Details
+                  </button>
+                </div>
+              ))}
+            </div>
+          </>
         )}
       </div>
 
@@ -413,14 +410,14 @@ export default function FacultyDashboard() {
                   <p className="text-caption text-on-surface-variant">{selectedCase.dept}</p>
                 </div>
               </div>
-              <button 
+              <button
                 onClick={() => setSelectedCase(null)}
                 className="material-symbols-outlined text-on-surface-variant hover:text-primary cursor-pointer p-xs hover:bg-surface-container-high rounded-full select-none"
               >
                 close
               </button>
             </div>
-            
+
             <div className="p-lg space-y-lg">
               <div className="flex flex-wrap gap-md justify-between items-center bg-surface-container-low p-md rounded-xl border border-outline-variant/40">
                 <div>
@@ -454,7 +451,7 @@ export default function FacultyDashboard() {
               <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-md pt-md border-t border-outline-variant/30">
                 <div className="flex items-center gap-sm">
                   <label htmlFor="modal-status" className="font-label-md text-label-md text-on-surface-variant">Update Status:</label>
-                  <select 
+                  <select
                     id="modal-status"
                     className="bg-white border border-outline-variant rounded-lg px-sm py-xs font-label-md text-label-md text-on-surface-variant focus:border-primary outline-none cursor-pointer"
                     value={selectedCase.status}
@@ -467,14 +464,14 @@ export default function FacultyDashboard() {
                 </div>
 
                 <div className="flex gap-sm">
-                  <button 
+                  <button
                     onClick={() => handleStatusChange(selectedCase.id, 'resolved')}
                     disabled={selectedCase.status === 'resolved'}
                     className="px-md py-sm bg-primary text-on-primary font-label-md rounded-lg hover:bg-primary-container transition-all active:scale-95 shadow-sm cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed disabled:active:scale-100 border-none"
                   >
                     Resolve Case
                   </button>
-                  <button 
+                  <button
                     onClick={() => handleDeleteCase(selectedCase.id)}
                     className="px-md py-sm border border-error text-error font-label-md rounded-lg hover:bg-error/10 transition-all active:scale-95 cursor-pointer"
                   >

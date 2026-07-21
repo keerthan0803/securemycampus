@@ -45,7 +45,7 @@ export default function Support() {
       return;
     }
     alert(`Thank you ${name} for your feedback! We will inspect your request.`);
-    
+
     // Reset Form
     setName('');
     setEmail('');
@@ -57,7 +57,7 @@ export default function Support() {
   return (
     <div className="w-full min-h-screen pb-3xl">
       <div className="max-w-container-max mx-auto px-gutter space-y-3xl pt-xl">
-        
+
         {/* Hero Section */}
         <section className="text-center space-y-md">
           <h1 className="font-display-lg text-display-lg text-primary">How can we help you today?</h1>
@@ -68,25 +68,24 @@ export default function Support() {
 
         {/* FAQs & Feedback Container */}
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-xl items-start">
-          
+
           {/* FAQ Section */}
           <section className="lg:col-span-7 faq-section space-y-lg">
             <div className="flex items-center gap-sm mb-lg">
               <span className="material-symbols-outlined text-primary select-none">quiz</span>
               <h2 className="font-headline-md text-headline-md text-on-surface">Frequently Asked Questions</h2>
             </div>
-            
+
             <div className="space-y-md">
               {FAQS.map((faq) => {
                 const isActive = activeFaq === faq.id;
                 return (
-                  <div 
-                    key={faq.id} 
-                    className={`faq-item bg-surface-container-lowest rounded-xl custom-shadow border-l-4 border-transparent hover:border-primary transition-all duration-300 ${
-                      isActive ? 'active border-primary' : ''
-                    }`}
+                  <div
+                    key={faq.id}
+                    className={`faq-item bg-surface-container-lowest rounded-xl custom-shadow border-l-4 border-transparent hover:border-primary transition-all duration-300 ${isActive ? 'active border-primary' : ''
+                      }`}
                   >
-                    <button 
+                    <button
                       onClick={() => toggleFaq(faq.id)}
                       className="faq-question w-full flex items-center justify-between p-lg text-left focus:outline-none border-none bg-transparent cursor-pointer"
                     >
@@ -95,7 +94,7 @@ export default function Support() {
                         expand_more
                       </span>
                     </button>
-                    <div 
+                    <div
                       className="faq-answer px-lg text-on-surface-variant leading-relaxed"
                       style={{ maxHeight: isActive ? '300px' : '0', paddingBottom: isActive ? '24px' : '0' }}
                     >
@@ -114,16 +113,16 @@ export default function Support() {
                 <span className="material-symbols-outlined text-primary select-none">rate_review</span>
                 <h2 className="font-headline-md text-headline-md text-on-surface">Send Feedback</h2>
               </div>
-              
+
               <form onSubmit={handleFormSubmit} className="space-y-lg">
                 <div className="space-y-xs">
                   <label className="font-label-md text-label-md text-on-surface-variant" htmlFor="fullName">
                     Full Name <span className="text-error">*</span>
                   </label>
-                  <input 
+                  <input
                     id="fullName"
-                    className="w-full p-md bg-white border border-outline-variant rounded-lg focus:ring-2 focus:ring-primary focus:border-primary outline-none transition-all font-body-md" 
-                    placeholder="Enter your name" 
+                    className="w-full p-md bg-white border border-outline-variant rounded-lg focus:ring-2 focus:ring-primary focus:border-primary outline-none transition-all font-body-md"
+                    placeholder="Enter your name"
                     required
                     type="text"
                     value={name}
@@ -135,10 +134,10 @@ export default function Support() {
                   <label className="font-label-md text-label-md text-on-surface-variant" htmlFor="emailAddr">
                     Email Address <span className="text-error">*</span>
                   </label>
-                  <input 
+                  <input
                     id="emailAddr"
-                    className="w-full p-md bg-white border border-outline-variant rounded-lg focus:ring-2 focus:ring-primary focus:border-primary outline-none transition-all font-body-md" 
-                    placeholder="student@securemycampus.edu" 
+                    className="w-full p-md bg-white border border-outline-variant rounded-lg focus:ring-2 focus:ring-primary focus:border-primary outline-none transition-all font-body-md"
+                    placeholder="student@securemycampus.edu"
                     required
                     type="email"
                     value={email}
@@ -150,7 +149,7 @@ export default function Support() {
                   <label className="font-label-md text-label-md text-on-surface-variant" htmlFor="feedbackType">
                     Feedback Type
                   </label>
-                  <select 
+                  <select
                     id="feedbackType"
                     className="w-full p-md bg-white border border-outline-variant rounded-lg focus:ring-2 focus:ring-primary focus:border-primary outline-none transition-all font-body-md cursor-pointer"
                     value={type}
@@ -177,9 +176,8 @@ export default function Support() {
                           onClick={() => setRating(starIdx)}
                           onMouseEnter={() => setHoverRating(starIdx)}
                           onMouseLeave={() => setHoverRating(null)}
-                          className={`rating-star material-symbols-outlined text-3xl cursor-pointer transition-colors border-none bg-transparent p-0 ${
-                            isActive ? 'active text-yellow-500' : 'text-outline-variant hover:text-secondary'
-                          }`}
+                          className={`rating-star material-symbols-outlined text-3xl cursor-pointer transition-colors border-none bg-transparent p-0 ${isActive ? 'active text-yellow-500' : 'text-outline-variant hover:text-secondary'
+                            }`}
                           aria-label={`Rate ${starIdx} stars`}
                         >
                           star
@@ -193,10 +191,10 @@ export default function Support() {
                   <label className="font-label-md text-label-md text-on-surface-variant" htmlFor="userMsg">
                     Your Message <span className="text-error">*</span>
                   </label>
-                  <textarea 
+                  <textarea
                     id="userMsg"
-                    className="w-full p-md bg-white border border-outline-variant rounded-lg focus:ring-2 focus:ring-primary focus:border-primary outline-none transition-all resize-none font-body-md" 
-                    placeholder="How can we improve your experience?" 
+                    className="w-full p-md bg-white border border-outline-variant rounded-lg focus:ring-2 focus:ring-primary focus:border-primary outline-none transition-all resize-none font-body-md"
+                    placeholder="How can we improve your experience?"
                     required
                     rows="4"
                     value={message}
@@ -204,8 +202,8 @@ export default function Support() {
                   />
                 </div>
 
-                <button 
-                  type="submit" 
+                <button
+                  type="submit"
                   className="w-full py-md bg-primary text-white font-label-md rounded-lg hover:bg-primary-container transition-all active:scale-95 shadow-md cursor-pointer border-none"
                 >
                   Submit Feedback
